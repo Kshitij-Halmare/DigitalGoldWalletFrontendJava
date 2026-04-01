@@ -7,11 +7,13 @@ import com.example.Gold_Frontend.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MemberService {
@@ -21,6 +23,8 @@ public class MemberService {
     public MemberService(@Value("${backend.base-url}") String baseUrl) {
         this.restClient = RestClient.create(baseUrl);
     }
+
+    // ── Read ─────────────────────────────────────────────────────────────────────
 
     public UserResponseDTO getUsers(int page, int size) {
         return restClient.get()
@@ -47,7 +51,7 @@ public class MemberService {
                     .retrieve()
                     .body(AddressDTO.class);
         } catch (Exception e) {
-            return null; // Return null if address is not set for user
+            return null;
         }
     }
 
@@ -55,11 +59,12 @@ public class MemberService {
         return restClient.get()
                 .uri("/user/physical/{id}", userId)
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<PhysicalTransactionDTO>>() {});
+                .body(new ParameterizedTypeReference<>() {});
     }
 
+    // ── Write ────────────────────────────────────────────────────────────────────
+
     public void depositGold(Integer userId, BigDecimal amount) {
-        // This matches: PUT http://localhost:8080/user/deposit/{id}?amount=500
         restClient.put()
                 .uri(builder -> builder
                         .path("/user/deposit/{id}")
@@ -69,5 +74,72 @@ public class MemberService {
                 .toBodilessEntity();
     }
 
+    /**
+     * PATCH /users/{id} — update name and/or email.
+     * Spring Data REST accepts a PATCH with a partial JSON body.
+     */
+    public void updateUser(Integer userId, String name, String email) {
+        restClient.patch()
+                .uri("/users/{id}", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("name", name, "email", email))
+                .retrieve()
+                .toBodilessEntity();
+    }
 
+    /**
+     * Create a new user together with their address in one service call.
+     *
+     * Flow (mirrors your original JS):
+     * 1. POST /addresses  → get address HAL href
+     * 2. POST /users      → get user HAL self href
+     * 3. PUT  /users/{id}/address  (text/uri-list) → link address to user
+     */
+    public void createUserWithAddress(String name, String email,
+                                      String street, String city,
+                                      String state, String postalCode,
+                                      String country) {
+
+        // 1. Create address
+        AddressDTO addressPayload = new AddressDTO();
+        addressPayload.setStreet(street);
+        addressPayload.setCity(city);
+        addressPayload.setState(state);
+        addressPayload.setPostalCode(postalCode);
+        addressPayload.setCountry(country);
+
+        // We need the HAL response to grab the self link, so we read as Map
+        @SuppressWarnings("unchecked")
+        Map<String, Object> addrResp = restClient.post()
+                .uri("/addresses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(addressPayload)
+                .retrieve()
+                .body(Map.class);
+
+        @SuppressWarnings("unchecked")
+        String addrHref = ((Map<String, Map<String, String>>) addrResp.get("_links"))
+                .get("self").get("href");
+
+        // 2. Create user
+        @SuppressWarnings("unchecked")
+        Map<String, Object> userResp = restClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("name", name, "email", email))
+                .retrieve()
+                .body(Map.class);
+
+        @SuppressWarnings("unchecked")
+        String userSelfHref = ((Map<String, Map<String, String>>) userResp.get("_links"))
+                .get("self").get("href");
+
+        // 3. Link address → user  (PUT /users/{id}/address with text/uri-list)
+        restClient.put()
+                .uri(userSelfHref + "/address")
+                .contentType(MediaType.parseMediaType("text/uri-list"))
+                .body(addrHref)
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

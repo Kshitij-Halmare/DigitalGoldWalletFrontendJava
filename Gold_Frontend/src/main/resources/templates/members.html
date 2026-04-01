@@ -5,212 +5,192 @@
     <title>Member Directory | Digital Gold</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #D4AF37;
-            --bg-dark: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.03);
-            --modal-bg: #151515;
-        }
-
-        body {
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-            color: #e0e0e0;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 50px;
-        }
-
-        h2 {
-            font-family: 'Playfair Display', serif;
-            color: var(--gold);
-            text-align: center;
-            font-size: 2.5rem;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-        }
-
-        table {
-            width: 95%;
-            margin: 0 auto;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-        }
-
-        th {
-            color: var(--gold);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            padding: 20px;
-            background: rgba(212, 175, 55, 0.05);
-            border-bottom: 1px solid var(--gold);
-        }
-
-        td {
-            background: var(--glass);
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        tr:hover td { background: rgba(212, 175, 55, 0.08); cursor: pointer; }
-
-        .pagination { text-align: center; margin-top: 30px; min-height: 40px; }
-
-        .page-link {
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .page-btn {
-            background: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            width: 35px;
-            height: 35px;
-            margin: 0 5px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .page-btn.active { border-color: var(--gold); color: var(--gold); }
-        .page-btn:hover:not(.active) { border-color: #888; }
-
-        button {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            font-weight: 600;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            margin-left: 5px;
-        }
-
-        /* Add this inside your <style> tag */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none; /* Controlled by JS */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-card {
-            background: var(--modal-bg);
-            border: 1px solid var(--gold);
-            padding: 30px;
-            width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-card h3 {
-            font-family: 'Playfair Display', serif;
-            color: var(--gold);
-            margin-top: 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .modal-form { display: flex; flex-direction: column; gap: 15px; }
-        .modal-form label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
-
-        /* Styling for the numeric input inside modal */
-        .modal-form input {
-            background: #111;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-        }
-
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        :root { --gold: #D4AF37; --bg-dark: #0a0a0a; --glass: rgba(255,255,255,0.03); --modal-bg: #151515; }
+        body { background: radial-gradient(circle at center,#1a1a1a 0%,#000 100%); color:#e0e0e0; font-family:'Inter',sans-serif; margin:0; padding:50px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--gold); text-align:center; font-size:2.5rem; letter-spacing:4px; margin-bottom:10px; }
+        .subtitle { text-align:center; color:#888; margin-bottom:40px; text-transform:uppercase; font-size:0.8rem; letter-spacing:2px; }
+        .top-bar { text-align:right; margin-bottom:20px; width:90%; margin-left:auto; margin-right:auto; }
+        table { width:95%; margin:0 auto; border-collapse:separate; border-spacing:0 12px; }
+        th { color:var(--gold); font-size:0.75rem; text-transform:uppercase; padding:20px; background:rgba(212,175,55,0.05); border-bottom:1px solid var(--gold); }
+        td { background:var(--glass); padding:20px; text-align:center; border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05); }
+        tr:hover td { background:rgba(212,175,55,0.08); cursor:pointer; }
+        .search-container { display:flex; flex-direction:column; gap:5px; margin-top:10px; }
+        input { background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:4px; font-size:0.8rem; }
+        button { background:var(--gold); color:#000; border:none; padding:8px 15px; font-weight:600; border-radius:3px; cursor:pointer; font-size:0.7rem; text-transform:uppercase; transition:0.3s; }
+        button:hover { opacity:0.8; box-shadow:0 0 10px var(--gold); }
+        .btn-outline { background:transparent; border:1px solid var(--gold); color:var(--gold); margin-left:5px; }
+        .pagination { text-align:center; margin-top:30px; min-height:40px; }
+        .page-btn { background:transparent; border:1px solid #444; color:#fff; width:35px; height:35px; margin:0 5px; border-radius:50%; cursor:pointer; }
+        .page-btn.active { border-color:var(--gold); color:var(--gold); }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; backdrop-filter:blur(5px); }
+        .modal-card { background:var(--modal-bg); border:1px solid var(--gold); padding:30px; width:420px; border-radius:12px; box-shadow:0 10px 50px rgba(0,0,0,0.5); animation:fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)} }
+        .modal-card h3 { font-family:'Playfair Display',serif; color:var(--gold); margin-top:0; text-transform:uppercase; letter-spacing:2px; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:15px; margin-bottom:20px; }
+        .modal-form { display:flex; flex-direction:column; gap:12px; }
+        .modal-form label { font-size:0.75rem; color:#888; text-transform:uppercase; display:block; margin-bottom:3px; }
+        .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+        .error-text { color:red; font-size:11px; margin-top:3px; min-height:14px; }
+        .breadcrumb { width:90%; margin:0 auto 20px auto; color:#aaa; font-size:0.85rem; }
+        .breadcrumb span { cursor:pointer; }
+        .breadcrumb .separator { margin:0 8px; color:#555; }
+        .breadcrumb .active { color:var(--gold); cursor:default; }
+        .breadcrumb span:hover:not(.active) { color:var(--gold); }
+        .row-2 { display:flex; gap:10px; }
+        .row-2 > div { flex:1; }
     </style>
 </head>
 <body>
 
+<div class="breadcrumb">
+    <span onclick="window.location.href='/'">Home</span>
+    <span class="separator">/</span>
+    <span class="active">Members</span>
+</div>
+
 <h2>Vault Members</h2>
 <div class="subtitle">Digital Finance • Gold Backed</div>
+
+<div class="top-bar">
+    <button onclick="showModal('add')">+ Create New Account</button>
+</div>
 
 <table>
     <thead>
     <tr>
         <th>Sr.</th>
         <th>UID</th>
-        <th>Name</th>
-        <th>Email</th>
+        <th>
+            Name
+            <div class="search-container">
+                <input id="nameSearch" placeholder="Filter name...">
+                <div>
+                    <button onclick="searchUsers()">Find</button>
+                    <button class="btn-outline" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+        </th>
+        <th>
+            Email
+            <div class="search-container">
+                <input id="emailSearch" placeholder="Filter email...">
+                <div>
+                    <button onclick="searchUsers()">Find</button>
+                    <button class="btn-outline" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+        </th>
         <th>Balance</th>
         <th>Joined</th>
         <th>Management</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="user, iter : ${users}"
-        th:onclick="|window.location.href='/members/' + ${user.userId}|">
-
-        <td th:text="${iter.index + 1 + (currentPage * 20)}">1</td>
-        <td style="color:var(--gold)" th:text="'#' + ${user.userId}">#29</td>
-        <td th:text="${user.name}">Name</td>
-        <td th:text="${user.email}">Email</td>
-        <td th:text="'₹' + ${user.balance}">₹0.00</td>
-        <td th:text="${user.createdAt != null ? #strings.substring(user.createdAt,0,10) : 'N/A'}">Date</td>
-
-        <td onclick="event.stopPropagation()">
-            <button th:onclick="'showDepositModal(' + ${user.userId} + ')'">Deposit</button>
-            <button class="btn-outline">Edit</button>
-        </td>
-    </tr>
+    <tbody id="usersTable">
+    <!-- Thymeleaf renders first page server-side for fast initial load -->
+    <th:block th:if="${users != null and !#lists.isEmpty(users)}">
+        <!-- Use data-* for strings (Thymeleaf 3.1 blocks strings in th:onclick) -->
+        <tr th:each="user, stat : ${users}"
+            th:attr="data-uid=${user.userId}"
+            onclick="window.location.href='/members/'+this.dataset.uid"
+            style="cursor:pointer">
+            <td th:text="${stat.index + 1 + currentPage * 20}">1</td>
+            <td style="color:var(--gold)" th:text="'#' + ${user.userId}">#1</td>
+            <td th:text="${user.name}">Name</td>
+            <td th:text="${user.email}">Email</td>
+            <td th:text="'₹' + ${user.balance}">₹0</td>
+            <td th:text="${user.createdAt != null ? #strings.substring(user.createdAt,0,10) : '-'}">Date</td>
+            <td onclick="event.stopPropagation()">
+                <!-- Deposit: only needs numeric id — allowed in th:onclick -->
+                <button th:onclick="|showModal('deposit',{id:${user.userId}})|">Deposit</button>
+                <!-- Edit: needs strings → use data-* attributes, read in openEdit() -->
+                <button class="btn-outline"
+                        th:attr="data-uid=${user.userId}, data-name=${user.name}, data-email=${user.email}"
+                        onclick="openEdit(this)">Edit</button>
+            </td>
+        </tr>
+    </th:block>
+    <th:block th:if="${users == null or #lists.isEmpty(users)}">
+        <tr id="emptyRow">
+            <td colspan="7" style="text-align:center;padding:80px;color:#888;font-style:italic;">
+                <div style="font-size:1.2rem;color:var(--gold);margin-bottom:10px;">No members found</div>
+                Add your first member using the button above.
+            </td>
+        </tr>
+    </th:block>
     </tbody>
 </table>
 
-<div class="pagination" th:if="${totalPages > 1}">
-    <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-       th:href="@{/members(page=${i})}"
-       class="page-link">
-        <button th:text="${i + 1}"
-                th:class="${i == currentPage} ? 'page-btn active' : 'page-btn'">
-        </button>
-    </a>
+<!-- Pagination — rendered server-side initially, rebuilt by JS after search/page change -->
+<div id="pagination" class="pagination">
+    <th:block th:if="${totalPages > 1}">
+        <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <button class="page-btn"
+                    th:classappend="${i == currentPage} ? 'active'"
+                    th:onclick="|loadUsers(${i})|"
+                    th:text="${i + 1}">1</button>
+        </th:block>
+    </th:block>
 </div>
 
+<!-- ===================== MODAL ===================== -->
 <div id="uiModal" class="modal-overlay">
     <div class="modal-card">
-        <h3>Gold Deposit</h3>
+        <h3 id="modalTitle">Account Action</h3>
         <div class="modal-form">
-            <label>Deposit Amount (₹)</label>
-            <input type="number" id="inputAmount" min="1" step="0.01" style="width: 100%;">
-            <div id="depositError" style="color:red; font-size:12px;"></div>
+
+            <!-- Name -->
+            <div id="field-name">
+                <label>Account Holder Name</label>
+                <input type="text" id="inputName" style="width:100%;box-sizing:border-box;">
+                <div id="nameError" class="error-text"></div>
+            </div>
+
+            <!-- Email -->
+            <div id="field-email">
+                <label>Email Address</label>
+                <input type="email" id="inputEmail" style="width:100%;box-sizing:border-box;">
+                <div id="emailError" class="error-text"></div>
+            </div>
+
+            <!-- Address fields (add only) -->
+            <div id="address-section">
+                <div id="field-street">
+                    <label>Street</label>
+                    <input type="text" id="inputStreet" style="width:100%;box-sizing:border-box;">
+                    <div id="streetError" class="error-text"></div>
+                </div>
+                <div class="row-2">
+                    <div>
+                        <label>City</label>
+                        <input type="text" id="inputCity" style="width:100%;box-sizing:border-box;">
+                        <div id="cityError" class="error-text"></div>
+                    </div>
+                    <div>
+                        <label>State</label>
+                        <input type="text" id="inputState" style="width:100%;box-sizing:border-box;">
+                        <div id="stateError" class="error-text"></div>
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div>
+                        <label>Postal Code</label>
+                        <input type="text" id="inputPostal" style="width:100%;box-sizing:border-box;">
+                        <div id="postalError" class="error-text"></div>
+                    </div>
+                    <div>
+                        <label>Country</label>
+                        <input type="text" id="inputCountry" style="width:100%;box-sizing:border-box;">
+                        <div id="countryError" class="error-text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deposit amount -->
+            <div id="field-amount" style="display:none;">
+                <label>Deposit Amount (₹)</label>
+                <input type="number" id="inputAmount" min="1" step="0.01" style="width:100%;box-sizing:border-box;">
+                <div id="depositError" class="error-text"></div>
+            </div>
+
         </div>
         <div class="modal-actions">
             <button class="btn-outline" onclick="closeModal()">Cancel</button>
@@ -219,39 +199,250 @@
     </div>
 </div>
 
-    <script>
-        let currentDepositId = null;
+<script th:inline="javascript">
+    // ── Config ──────────────────────────────────────────────────────────────────
+    const BACKEND_URL  = /*[[${@environment.getProperty('backend.base-url')}]]*/ "http://localhost:8080";
+    const BASE_URL     = BACKEND_URL + "/users";
+    const DEPOSIT_URL  = BACKEND_URL + "/user/deposit";
 
-function showDepositModal(id) {
-    currentDepositId = id;
-    document.getElementById('uiModal').style.display = 'flex';
-    document.getElementById('modalSubmitBtn').onclick = () => executeDeposit();
-}
+    let currentPage = /*[[${currentPage}]]*/ 0;
+    let currentURL  = BASE_URL;
+    let isSearchMode = false; // track if we are in search mode
 
-function closeModal() {
-    document.getElementById('uiModal').style.display = 'none';
-}
+    const modal          = document.getElementById('uiModal');
+    const modalSubmitBtn = document.getElementById('modalSubmitBtn');
 
-async function executeDeposit() {
-    const amount = document.getElementById('inputAmount').value;
-
-    if(!amount || amount <= 0) {
-        document.getElementById('depositError').innerText = "Please enter a valid amount.";
-        return;
+    // ── Helpers ─────────────────────────────────────────────────────────────────
+    function formatDate(d) {
+        if (!d) return '-';
+        const dt = new Date(d);
+        return `${String(dt.getDate()).padStart(2,'0')} ${dt.toLocaleString('default',{month:'long'})} ${dt.getFullYear()}`;
     }
 
-    // Call your Project B API
-    const response = await fetch(`/api/deposit/${currentDepositId}?amount=${amount}`, {
-        method: 'PUT'
-    });
-
-    if (response.ok) {
-        closeModal();
-        window.location.reload(); // Refresh the page to see the updated balance
-    } else {
-        alert("Deposit failed. Check backend logs.");
+    function clearErrors() {
+        document.querySelectorAll('.error-text').forEach(el => el.innerText = '');
     }
-}
-    </script>
+
+    // ── openEdit: reads data-* from Edit button (Thymeleaf 3.1 blocks strings in th:onclick) ──
+    function openEdit(btn) {
+        showModal('edit', {
+            id:    btn.dataset.uid,
+            name:  btn.dataset.name,
+            email: btn.dataset.email
+        });
+    }
+
+    // ── Modal ────────────────────────────────────────────────────────────────────
+    function showModal(mode, data = {}) {
+        clearErrors();
+        ['field-name','field-email','address-section','field-amount']
+            .forEach(id => document.getElementById(id).style.display = 'none');
+
+        if (mode === 'add') {
+            document.getElementById('modalTitle').innerText = 'Create New Vault';
+            ['field-name','field-email','address-section'].forEach(id => document.getElementById(id).style.display = 'block');
+            ['inputName','inputEmail','inputStreet','inputCity','inputState','inputPostal','inputCountry']
+                .forEach(id => document.getElementById(id).value = '');
+            modalSubmitBtn.onclick = executeAddUser;
+
+        } else if (mode === 'edit') {
+            document.getElementById('modalTitle').innerText = 'Edit Member';
+            ['field-name','field-email'].forEach(id => document.getElementById(id).style.display = 'block');
+            document.getElementById('inputName').value  = data.name  || '';
+            document.getElementById('inputEmail').value = data.email || '';
+            modalSubmitBtn.onclick = () => executeUpdateUser(data.id);
+
+        } else if (mode === 'deposit') {
+            document.getElementById('modalTitle').innerText = 'Gold Deposit';
+            document.getElementById('field-amount').style.display = 'block';
+            document.getElementById('inputAmount').value = '';
+            modalSubmitBtn.onclick = () => executeDeposit(data.id);
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() { modal.style.display = 'none'; }
+
+    // ── Load / Render Users ──────────────────────────────────────────────────────
+    function loadUsers(page = 0) {
+        currentPage = page;
+        const sep = currentURL.includes('?') ? '&' : '?';
+        const url = `${currentURL}${sep}page=${page}&size=20`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const table = document.getElementById('usersTable');
+                table.innerHTML = '';
+
+                const users = data._embedded?.userses;
+                if (users && users.length > 0) {
+                    users.forEach((user, i) => {
+                        const userId = user._links.self.href.split('/').pop();
+                        const name   = (user.name  || '').replace(/'/g, "\\'");
+                        const email  = (user.email || '').replace(/'/g, "\\'");
+                        table.innerHTML += `
+                            <tr onclick="window.location.href='/members/${userId}'">
+                                <td>${i + 1 + page * 20}</td>
+                                <td style="color:var(--gold)">#${userId}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>₹${user.balance}</td>
+                                <td>${formatDate(user.createdAt)}</td>
+                                <td onclick="event.stopPropagation()">
+                                    <button onclick="showModal('deposit',{id:${userId}})">Deposit</button>
+                                    <button class="btn-outline"
+                                            onclick="showModal('edit',{id:${userId},name:'${name}',email:'${email}'})">Edit</button>
+                                </td>
+                            </tr>`;
+                    });
+                    createPagination(data.page?.totalPages || 0);
+                } else {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align:center;padding:80px;color:#888;font-style:italic;">
+                                <div style="font-size:1.2rem;color:var(--gold);margin-bottom:10px;">No matches found</div>
+                                Try adjusting your search filters or clear them to see all members.
+                            </td>
+                        </tr>`;
+                    createPagination(0);
+                }
+            })
+            .catch(err => { console.error('Error loading users:', err); createPagination(0); });
+    }
+
+    function createPagination(totalPages) {
+        const footer = document.getElementById('pagination');
+        footer.innerHTML = '';
+        if (!totalPages || totalPages <= 1) { footer.style.display = 'none'; return; }
+        footer.style.display = 'block';
+        for (let i = 0; i < totalPages; i++) {
+            footer.innerHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}"
+                        onclick="loadUsers(${i})">${i + 1}</button>`;
+        }
+    }
+
+    // ── Search ───────────────────────────────────────────────────────────────────
+    function searchUsers() {
+        const name  = document.getElementById('nameSearch').value.trim();
+        const email = document.getElementById('emailSearch').value.trim();
+        if (name)       currentURL = `${BASE_URL}/search/findByNameContainingIgnoreCase?name=${encodeURIComponent(name)}`;
+        else if (email) currentURL = `${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`;
+        else            currentURL = BASE_URL;
+        isSearchMode = !!(name || email);
+        loadUsers(0);
+    }
+
+    function clearSearch() {
+        document.getElementById('nameSearch').value  = '';
+        document.getElementById('emailSearch').value = '';
+        currentURL   = BASE_URL;
+        isSearchMode = false;
+        loadUsers(0);
+    }
+
+    // ── Deposit ──────────────────────────────────────────────────────────────────
+    function executeDeposit(userId) {
+        const amount   = Number(document.getElementById('inputAmount').value);
+        const errorBox = document.getElementById('depositError');
+        errorBox.innerText = '';
+        if (!amount || amount < 1 || amount > 500000) {
+            errorBox.innerText = 'Enter a valid amount between ₹1 and ₹5,00,000';
+            return;
+        }
+        fetch(`/api/deposit/${userId}?amount=${amount}`, { method: 'PUT' })
+            .then(res => {
+                if (!res.ok) throw new Error('Deposit failed');
+                closeModal();
+                loadUsers(currentPage);
+            })
+            .catch(() => { document.getElementById('depositError').innerText = 'Deposit failed. Please try again.'; });
+    }
+
+    // ── Update User (Edit) ────────────────────────────────────────────────────────
+    async function executeUpdateUser(userId) {
+        const name  = document.getElementById('inputName').value.trim();
+        const email = document.getElementById('inputEmail').value.trim();
+        clearErrors();
+        let isValid = true;
+
+        if (!name) { document.getElementById('nameError').innerText = 'Name is required'; isValid = false; }
+        else if (!/^[A-Za-z\s]+$/.test(name)) { document.getElementById('nameError').innerText = 'Letters only'; isValid = false; }
+
+        if (!email) { document.getElementById('emailError').innerText = 'Email is required'; isValid = false; }
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').innerText = 'Invalid email'; isValid = false; }
+
+        if (!isValid) return;
+
+        try {
+            // Check for duplicate email (excluding current user)
+            const checkRes  = await fetch(`${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`);
+            const checkData = await checkRes.json();
+            if (checkData._embedded?.userses) {
+                const dup = checkData._embedded.userses.find(u => {
+                    const id = u._links.self.href.split('/').pop();
+                    return u.email.toLowerCase() === email.toLowerCase() && String(id) !== String(userId);
+                });
+                if (dup) { document.getElementById('emailError').innerText = 'Email already registered to another account'; return; }
+            }
+
+            // Send update through our Spring MVC proxy
+            const res = await fetch(`/api/users/${userId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+
+            if (res.ok) { closeModal(); loadUsers(currentPage); }
+            else        { document.getElementById('emailError').innerText = 'Update failed. Please try again.'; }
+        } catch (e) { console.error('Update error:', e); }
+    }
+
+    // ── Add New User ─────────────────────────────────────────────────────────────
+    async function executeAddUser() {
+        const name    = document.getElementById('inputName').value.trim();
+        const email   = document.getElementById('inputEmail').value.trim();
+        const street  = document.getElementById('inputStreet').value.trim();
+        const city    = document.getElementById('inputCity').value.trim();
+        const state   = document.getElementById('inputState').value.trim();
+        const postal  = document.getElementById('inputPostal').value.trim();
+        const country = document.getElementById('inputCountry').value.trim();
+        clearErrors();
+        let isValid = true;
+
+        if (!name || !/^[A-Za-z\s]+$/.test(name))    { document.getElementById('nameError').innerText    = 'Letters only'; isValid = false; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').innerText   = 'Invalid email'; isValid = false; }
+        if (!street)                                  { document.getElementById('streetError').innerText  = 'Required'; isValid = false; }
+        if (!city || !/^[A-Za-z\s]+$/.test(city))    { document.getElementById('cityError').innerText    = 'Letters only'; isValid = false; }
+        if (!state || !/^[A-Za-z\s]+$/.test(state))  { document.getElementById('stateError').innerText   = 'Letters only'; isValid = false; }
+        if (!postal || !/^[0-9]+$/.test(postal))      { document.getElementById('postalError').innerText  = 'Numbers only'; isValid = false; }
+        if (!country || !/^[A-Za-z\s]+$/.test(country)){ document.getElementById('countryError').innerText = 'Letters only'; isValid = false; }
+        if (!isValid) return;
+
+        try {
+            // Check for duplicate email before creating
+            const checkRes  = await fetch(`${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`);
+            const checkData = await checkRes.json();
+            if (checkData._embedded?.userses?.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+                document.getElementById('emailError').innerText = 'Email already registered';
+                return;
+            }
+
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, street, city, state, postalCode: postal, country })
+            });
+
+            if (res.ok) { closeModal(); loadUsers(0); }
+            else {
+                const err = await res.json().catch(() => ({}));
+                document.getElementById('emailError').innerText = err.message || 'Failed to create user.';
+            }
+        } catch (e) { alert('Transaction failed.'); }
+    }
+</script>
 </body>
 </html>
