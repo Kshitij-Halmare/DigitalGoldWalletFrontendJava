@@ -41,7 +41,7 @@ public class MemberController {
     @GetMapping("/members/{id}")
     public String viewMemberProfile(@PathVariable("id") Integer id, Model model) {
         // 1. Fetch Basic Info
-        UserDTO user = memberService.getUserById(Long.valueOf(id));
+        UserDTO user = memberService.getUserById(Integer.valueOf(id));
         model.addAttribute("user", user);
         model.addAttribute("address", memberService.getAddressByUrl(user.getAddressUrl()));
 

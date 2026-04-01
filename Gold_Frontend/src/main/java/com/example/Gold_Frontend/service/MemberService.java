@@ -33,7 +33,7 @@ public class MemberService {
                 .body(UserResponseDTO.class);
     }
 
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(Integer id) {
         return restClient.get()
                 .uri("/users/{id}", id)
                 .retrieve()
@@ -100,41 +100,29 @@ public class MemberService {
                                       String state, String postalCode,
                                       String country) {
 
-        // 1. Create address
-        AddressDTO addressPayload = new AddressDTO();
-        addressPayload.setStreet(street);
-        addressPayload.setCity(city);
-        addressPayload.setState(state);
-        addressPayload.setPostalCode(postalCode);
-        addressPayload.setCountry(country);
-
-        // We need the HAL response to grab the self link, so we read as Map
-        @SuppressWarnings("unchecked")
-        Map<String, Object> addrResp = restClient.post()
+        // 1. Create address and get URI from Location header
+        String addrHref = restClient.post()
                 .uri("/addresses")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(addressPayload)
+                .body(new AddressDTO(street, city, state, postalCode, country))
                 .retrieve()
-                .body(Map.class);
+                .toEntity(Void.class) // We don't need a body, just the headers
+                .getHeaders()
+                .getLocation()
+                .toString();
 
-        @SuppressWarnings("unchecked")
-        String addrHref = ((Map<String, Map<String, String>>) addrResp.get("_links"))
-                .get("self").get("href");
-
-        // 2. Create user
-        @SuppressWarnings("unchecked")
-        Map<String, Object> userResp = restClient.post()
+        // 2. Create user and get URI from Location header
+        String userSelfHref = restClient.post()
                 .uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("name", name, "email", email))
                 .retrieve()
-                .body(Map.class);
+                .toEntity(Void.class)
+                .getHeaders()
+                .getLocation()
+                .toString();
 
-        @SuppressWarnings("unchecked")
-        String userSelfHref = ((Map<String, Map<String, String>>) userResp.get("_links"))
-                .get("self").get("href");
-
-        // 3. Link address → user  (PUT /users/{id}/address with text/uri-list)
+        // 3. Link address → user
         restClient.put()
                 .uri(userSelfHref + "/address")
                 .contentType(MediaType.parseMediaType("text/uri-list"))

@@ -9,4 +9,12 @@ public class AddressDTO {
     private String state;
     private String postalCode;
     private String country;
+
+    public AddressDTO(String street, String city, String state, String postalCode, String country) {
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.postalCode = postalCode;
+        this.country = country;
+    }
 }
