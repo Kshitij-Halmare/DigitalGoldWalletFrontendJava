@@ -126,38 +126,51 @@ public class VendorBranchesService {
 
     public Integer getAddressIdByBranchId(Integer branchId) {
         try {
-            @SuppressWarnings("unchecked")
             Map<String, Object> response = restClient.get()
-                    .uri("/vendorBranches/{id}/address", branchId)
+                    .uri("/addresses/{id}", branchId)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .body(Map.class);
 
+            System.out.println("FULL RESPONSE: " + response);
+
             if (response == null) return null;
 
             Map<String, Object> embedded = (Map<String, Object>) response.get("_embedded");
+            System.out.println("EMBEDDED: " + embedded);
+
             if (embedded == null) return null;
 
-            List<Map<String, Object>> branches = (List<Map<String, Object>>) embedded.get("vendorBranches");
+            List<Map<String, Object>> branches =
+                    (List<Map<String, Object>>) embedded.get("vendorBranches");
+            System.out.println("BRANCHES: " + branches);
+
             if (branches == null || branches.isEmpty()) return null;
 
             Map<String, Object> firstBranch = branches.get(0);
-            Map<String, Object> address = (Map<String, Object>) firstBranch.get("address");
+
+            Map<String, Object> address =
+                    (Map<String, Object>) firstBranch.get("address");
+            System.out.println("ADDRESS: " + address);
+
             if (address == null) return null;
 
             Object rawId = address.get("addressId");
+            System.out.println("RAW ID: " + rawId);
+
             if (rawId == null) return null;
 
             if (rawId instanceof Number) return ((Number) rawId).intValue();
             if (rawId instanceof String) return Integer.parseInt((String) rawId);
+
             throw new RuntimeException("Unknown addressId type: " + rawId.getClass());
 
-        } catch (RestClientException e) {
+        } catch (Exception e) {
+            System.out.println("❌ ERROR OCCURRED:");
             e.printStackTrace();
             return null;
         }
     }
-
     // ------------------- TRANSACTIONS -------------------
 
     public List<TransactionDTO> findTransactionsByBranchId(Integer branchId) {
