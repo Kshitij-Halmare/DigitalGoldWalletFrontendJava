@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Transactions</title>
+    <style>
+        :root {
+    --gold: #C9973F;
+    --gold-dim: #9a7830;
+    --gold-pale: #e8c97a;
+    --bg: #080705;
+    --card-bg: #0f0d09;
+    --border: #252018;
+    --text: #ede6d8;
+    --muted: #8a7e6a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(circle at top, #0f0d09, #000);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    margin: 20px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--gold-pale);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* TITLE */
+h1 {
+    text-align: center;
+    font-size: 2.4rem;
+    margin-top: 10px;
+    font-family: "Cormorant Garamond", serif;
+    color: var(--gold);
+}
+
+/* STATUS */
+#status {
+    text-align: center;
+    margin-top: 10px;
+    color: var(--muted);
+}
+
+/* TABLE */
+table {
+    width: 92%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    min-width: 900px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    padding: 0 20px;
+}
+
+/* HEADER */
+th {
+    background: #0c0a07;
+    color: var(--gold-pale);
+    padding: 14px;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+/* CELLS */
+td {
+    padding: 14px;
+    border-bottom: 1px solid #1a1712;
+    color: var(--text);
+    font-size: 0.92rem;
+}
+
+tr:hover {
+    background: rgba(201, 151, 63, 0.06);
+    transition: 0.2s;
+}
+
+/* BUTTONS */
+.action-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.physical-btn {
+    background: transparent;
+    border: 1px solid #3a2e16;
+    color: #e8c97a;
+}
+
+.physical-btn:hover {
+    background: rgba(201, 151, 63, 0.12);
+}
+
+.virtual-btn {
+    background: transparent;
+    border: 1px solid #3a2e16;
+    color: #e8c97a;
+}
+
+.virtual-btn:hover {
+    background: rgba(201, 151, 63, 0.12);
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+/* LOADING */
+.loading {
+    text-align: center;
+    color: var(--muted);
+    padding: 20px;
+}
+
+.error {
+    color: #ff6b6b;
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+
+<!-- Back button goes to Spring MVC route, not old .html file -->
+<button class="back-btn" onclick="window.location.href='/sjvendors'">
+    ← Back to Vendors List
+</button>
+
+<!-- Title changes based on type -->
+<h1 th:text="${type == 'virtual'} ? 'Virtual Gold Holdings' : 'Physical Gold Transactions'"></h1>
+
+<p id="status"></p>
+<p th:if="${error}" th:text="${error}" style="color:red; text-align:center;"></p>
+
+<div class="table-wrapper">
+    <table id="transactionsTable">
+        <thead>
+        <!-- Virtual Headers -->
+        <tr th:if="${type == 'virtual'}">
+            <th>Holding ID</th>
+            <th>User</th>
+            <th>Quantity (g)</th>
+            <th>Created At</th>
+            <th>Status</th>
+        </tr>
+        <!-- Physical Headers -->
+        <tr th:if="${type != 'virtual'}">
+            <th>Transaction ID</th>
+            <th>Quantity (g)</th>
+            <th>Date</th>
+            <th>User</th>
+            <th>Delivery Address</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <!-- ===== VIRTUAL ROWS ===== -->
+        <th:block th:if="${type == 'virtual'}">
+            <tr th:if="${#lists.isEmpty(holdings)}">
+                <td colspan="5" style="text-align:center; color:#888;">
+                    No virtual holdings found
+                </td>
+            </tr>
+            <tr th:each="h : ${holdings}">
+                <td th:text="${h['holdingId']} ?: '-'"></td>
+                <td th:text="${h['user'] != null ? h['user']['name'] : '-'}"></td>
+                <td th:text="${h['quantity']} ?: '-'"></td>
+                <td th:text="${h['createdAt']} ?: '-'"></td>
+                <td th:text="${h['holdingStatus']} ?: '-'"></td>
+            </tr>
+        </th:block>
+
+        <!-- ===== PHYSICAL ROWS ===== -->
+        <th:block th:if="${type != 'virtual'}">
+            <tr th:if="${#lists.isEmpty(transactions)}">
+                <td colspan="5" style="text-align:center; color:#888;">
+                    No physical transactions found
+                </td>
+            </tr>
+            <tr th:each="t : ${transactions}">
+                <td th:text="${t['transactionId']} ?: '-'"></td>
+                <td th:text="${t['quantity']} ?: '-'"></td>
+                <td th:text="${t['createdAt']} ?: '-'"></td>
+                <td th:text="${t['user'] != null ? t['user']['name'] : '-'}"></td>
+                <td th:if="${t['deliveryAddress'] != null}"
+                    th:text="${t['deliveryAddress']['street'] + ', ' + t['deliveryAddress']['city']}">
+                </td>
+                <td th:if="${t['deliveryAddress'] == null}">-</td>
+            </tr>
+        </th:block>
+
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
