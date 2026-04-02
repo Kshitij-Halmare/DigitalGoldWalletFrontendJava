@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vendor Branches</title>
+    <link rel="stylesheet" th:href="@{/css/branches.css}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Back -->
+    <a th:href="@{/vendors}">
+        <button class="back-btn">← Back to Vendors</button>
+    </a>
+    <div class="breadcrumbs">
+        <a th:href="@{/}">Home</a>
+        <span>›</span>
+        <a th:href="@{/vendors}">Vendors</a>
+        <span>›</span>
+        <span th:text="${vendor != null ? vendor.vendorName : 'Vendor'}"></span>
+        <span>›</span>
+        <span class="active">Branches</span>
+    </div>
+    <h2>Vendor Branches</h2>
+
+    <!-- ✅ SAFE subtitle -->
+    <p class="subtitle"
+       th:text="${vendor != null} ? 'Overview of ' + vendor.vendorName + '\'s active branches' : 'Vendor details not available'">
+    </p>
+
+    <!-- Vendor Card -->
+    <div class="card vendor-card" th:if="${vendor != null}">
+        <div class="vendor-stat">
+            <div class="stat-label">Vendor Name</div>
+            <div class="stat-value" th:text="${vendor.vendorName}"></div>
+        </div>
+        <div class="vendor-stat">
+            <div class="stat-label">Current Gold Price</div>
+            <div class="stat-value gold" th:text="${vendor.currentGoldPrice}"></div>
+        </div>
+        <div class="vendor-stat">
+            <div class="stat-label">Total Gold Quantity</div>
+            <div class="stat-value gold" th:text="${vendor.totalGoldQuantity}"></div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card filter-card">
+        <div class="filter-title">Filter Branches</div>
+
+        <div class="filter-row">
+
+            <div class="filter-group">
+                <label>City</label>
+                <select id="city">
+                    <option value="">All Cities</option>
+                    <option th:each="c : ${cities}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>State</label>
+                <select id="state">
+                    <option value="">All States</option>
+                    <option th:each="s : ${states}" th:value="${s}" th:text="${s}"></option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Country</label>
+                <select id="country">
+                    <option value="">All Countries</option>
+                    <option th:each="c : ${countries}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="button" class="apply-btn" onclick="applyFilters()">Apply</button>
+                <button type="button" class="reset-btn" onclick="resetFilters()">Reset</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card table-card">
+
+        <table>
+            <thead>
+            <tr>
+                <th>Street</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Country</th>
+                <th>Postal Code</th>
+                <th>Gold Qty</th>
+            </tr>
+            </thead>
+
+            <tbody id="branchTableBody">
+
+            <tr th:each="b : ${branches}">
+                <td th:text="${b.address != null ? b.address.street : ''}"></td>
+                <td th:text="${b.address != null ? b.address.city : ''}"></td>
+                <td th:text="${b.address != null ? b.address.state : ''}"></td>
+                <td th:text="${b.address != null ? b.address.country : ''}"></td>
+                <td th:text="${b.address != null ? b.address.postalCode : ''}"></td>
+                <td th:text="${b.quantity}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <div id="emptyState"
+             th:if="${branches == null or #lists.isEmpty(branches)}">
+            No branches found
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ PASS DATA TO JS -->
+<script th:inline="javascript">
+    let allBranches = [[${branches}]];
+</script>
+
+<!-- ✅ INLINE JS (NO EXTERNAL FILE NEEDED) -->
+<script>
+
+    function applyFilters() {
+
+        let city = document.getElementById("city").value;
+        let state = document.getElementById("state").value;
+        let country = document.getElementById("country").value;
+
+        let filtered = allBranches.filter(b => {
+
+            let match = true;
+
+            if (city) match = match && b.address?.city === city;
+            if (state) match = match && b.address?.state === state;
+            if (country) match = match && b.address?.country === country;
+
+            return match;
+        });
+
+        renderTable(filtered);
+    }
+
+    function resetFilters() {
+        document.getElementById("city").value = "";
+        document.getElementById("state").value = "";
+        document.getElementById("country").value = "";
+
+        renderTable(allBranches);
+    }
+
+    function renderTable(branches) {
+
+        let table = document.getElementById("branchTableBody");
+        table.innerHTML = "";
+
+        if (!branches || branches.length === 0) {
+            table.innerHTML = "<tr><td colspan='6'>No branches found</td></tr>";
+            return;
+        }
+
+        branches.forEach(b => {
+
+            table.innerHTML += `
+                <tr>
+                    <td>${b.address?.street || ""}</td>
+                    <td>${b.address?.city || ""}</td>
+                    <td>${b.address?.state || ""}</td>
+                    <td>${b.address?.country || ""}</td>
+                    <td>${b.address?.postalCode || ""}</td>
+                    <td>${b.quantity || ""}</td>
+                </tr>
+            `;
+        });
+    }
+
+</script>
+
+</body>
+</html>
