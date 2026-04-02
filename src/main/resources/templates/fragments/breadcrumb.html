@@ -1,0 +1,67 @@
+<!-- fragments/breadcrumb.html -->
+<nav aria-label="breadcrumb" th:fragment="breadcrumb" class="breadcrumb-nav">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"
+            th:each="crumb, iterStat : ${breadcrumbs}"
+            th:classappend="${iterStat.last} ? 'active' : ''">
+
+            <!-- Home icon for first item -->
+            <svg th:if="${iterStat.first}" class="breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="9 22 9 12 15 12 15 22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <!-- If it's the last item, show as text -->
+            <span th:if="${iterStat.last}" th:text="${crumb.name}" class="breadcrumb-text"></span>
+
+            <!-- If not last, make it a link -->
+            <a th:if="${!iterStat.last}"
+               th:href="${crumb.url}"
+               th:text="${crumb.name}"
+               class="breadcrumb-link"></a>
+
+            <!-- Separator (except after last item) -->
+            <span th:if="${!iterStat.last}" class="breadcrumb-separator">/</span>
+        </li>
+    </ol>
+</nav>
+
+<style>
+    .breadcrumb {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 0;
+    margin: 16px 0;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.breadcrumb-link {
+    color: #7a6420;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-link:hover {
+    color: #d4af37;
+}
+
+.breadcrumb-text {
+    color: #2d2a1e;
+    font-weight: 600;
+}
+
+.breadcrumb-separator {
+    color: #bba96e;
+    margin: 0 4px;
+}
+</style>

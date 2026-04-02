@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Branch Transactions — Digital Gold Wallet System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+          rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold:        #C9973F;
+            --gold-dim:    #a07830;
+            --gold-pale:   #e8c97a;
+            --gold-dark:   #8B6F3F;
+            --bg:          #13100a;
+            --surface:     #1a1710;
+            --card-bg:     #1d1a11;
+            --card-hover:  #232016;
+            --border:      #2a2418;
+            --border-dim:  #201d12;
+            --text:        #f0e8d6;
+            --text-sub:    #9a8f78;
+            --text-muted:  #655944;
+            --green:       #4caf7d;
+            --red:         #e8806a;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* ── ANIMATED BACKGROUND ── */
+        .bg-glow {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 55% 35% at 50% 0%,  rgba(201,151,63,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 30% 25% at 0%  80%,  rgba(201,151,63,0.04) 0%, transparent 55%),
+                radial-gradient(ellipse 30% 25% at 100% 70%, rgba(201,151,63,0.04) 0%, transparent 55%);
+            animation: glow-pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ── PAGE WRAPPER ── */
+        .page-wrap {
+            position: relative; z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── HEADER SECTION ── */
+        .header-section {
+            margin-bottom: 36px;
+        }
+
+        .breadcrumb-nav {
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb-icon {
+            width: 16px; height: 16px;
+            color: var(--gold-dim);
+            flex-shrink: 0;
+        }
+
+        .breadcrumb-link {
+            color: var(--gold-dim);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .breadcrumb-link:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        .breadcrumb-text {
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-item.active .breadcrumb-text {
+            color: var(--text);
+        }
+
+        .breadcrumb-separator {
+            color: var(--border);
+            margin: 0 6px;
+        }
+
+        /* ── HERO HEADER ── */
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
+            font-weight: 300;
+            color: var(--text);
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+            margin-bottom: 12px;
+            animation: slideInLeft 0.7s ease-out 0.1s backwards;
+        }
+
+        .page-header h1 em {
+            font-style: italic;
+            color: var(--gold-pale);
+            font-weight: 400;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .page-header .subtitle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            color: var(--text-sub);
+            font-weight: 300;
+            animation: slideInLeft 0.7s ease-out 0.2s backwards;
+        }
+
+        .location-icon {
+            width: 18px; height: 18px;
+            color: var(--gold-dim);
+        }
+
+        /* ── STATS GRID ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.15s; }
+        .stat-card:nth-child(2) { animation-delay: 0.25s; }
+        .stat-card:nth-child(3) { animation-delay: 0.35s; }
+        .stat-card:nth-child(4) { animation-delay: 0.45s; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:hover {
+            border-color: var(--gold-dim);
+            background: var(--card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(201, 151, 63, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(201,151,63,0.05) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 400;
+            color: var(--gold-pale);
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+            word-break: break-word;
+        }
+
+        .stat-value.accent-green { color: var(--green); }
+
+        /* ── FILTER SECTION ── */
+        .filter-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            animation: slideUp 0.6s ease-out 0.5s backwards;
+        }
+
+        .filter-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 18px;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .filter-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 30px 10px 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a07830'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px 6px;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            border-color: var(--gold-dim);
+            background-color: rgba(201, 151, 63, 0.05);
+        }
+
+        .filter-select option {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold);
+            background: rgba(201, 151, 63, 0.05);
+        }
+
+        /* ── TABLE CARD ── */
+        .table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out 0.6s backwards;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-scroll::-webkit-scrollbar { height: 6px; }
+        .table-scroll::-webkit-scrollbar-track { background: var(--surface); }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+        .txn-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .txn-table thead {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .txn-table th {
+            padding: 14px 16px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .txn-table th:first-child { padding-left: 24px; }
+        .txn-table th:last-child { padding-right: 24px; }
+
+        .txn-table tbody tr {
+            border-bottom: 1px solid var(--border-dim);
+            transition: all 0.2s ease;
+        }
+
+        .txn-table tbody tr:last-child { border-bottom: none; }
+        .txn-table tbody tr:hover {
+            background: var(--card-hover);
+            box-shadow: inset 0 0 12px rgba(201, 151, 63, 0.05);
+        }
+
+        .txn-table tbody tr.tx-hidden { display: none; }
+
+        .txn-table td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            font-size: 0.92rem;
+            color: var(--text-sub);
+        }
+
+        .txn-table td:first-child { padding-left: 24px; }
+        .txn-table td:last-child { padding-right: 24px; }
+
+        .td-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-muted) !important;
+            font-weight: 500;
+        }
+
+        .td-user {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text) !important;
+        }
+
+        .td-uid {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+
+        .td-qty {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            color: var(--gold-pale) !important;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .td-amount {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            color: var(--text) !important;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .td-date {
+            font-size: 0.85rem;
+            color: var(--text-muted) !important;
+            white-space: nowrap;
+        }
+
+        /* ── TYPE BADGES ── */
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .type-badge.buy {
+            background: rgba(201, 151, 63, 0.12);
+            border: 1px solid rgba(201, 151, 63, 0.3);
+            color: var(--gold-pale);
+        }
+
+        .type-badge.sell {
+            background: rgba(76, 175, 125, 0.12);
+            border: 1px solid rgba(76, 175, 125, 0.3);
+            color: var(--green);
+        }
+
+        .type-badge.convert {
+            background: rgba(120, 100, 200, 0.12);
+            border: 1px solid rgba(120, 100, 200, 0.3);
+            color: #b8a8e8;
+        }
+
+        .type-badge.other {
+            background: rgba(160, 143, 120, 0.12);
+            border: 1px solid rgba(160, 143, 120, 0.25);
+            color: var(--text-sub);
+        }
+
+        .type-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ── STATUS BADGES ── */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            transition: all 0.2s ease;
+        }
+
+        .status-badge.success {
+            background: rgba(76, 175, 125, 0.15);
+            border: 1px solid rgba(76, 175, 125, 0.35);
+            color: var(--green);
+        }
+
+        .status-badge.failed {
+            background: rgba(232, 128, 106, 0.15);
+            border: 1px solid rgba(232, 128, 106, 0.35);
+            color: var(--red);
+        }
+
+        .status-badge.pending {
+            background: rgba(201, 151, 63, 0.12);
+            border: 1px solid rgba(201, 151, 63, 0.3);
+            color: var(--gold);
+        }
+
+        .status-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ── TABLE FOOTER ── */
+        .table-footer {
+            padding: 14px 24px;
+            border-top: 1px solid var(--border-dim);
+            background: var(--surface);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .count-badge {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            background: rgba(201, 151, 63, 0.08);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            opacity: 0.4;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid var(--border-dim);
+            margin-top: 48px;
+            background: linear-gradient(180deg, transparent 0%, rgba(201,151,63,0.02) 100%);
+        }
+
+        .footer-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0.4;
+        }
+
+        .footer-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            font-weight: 300;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .page-wrap { padding: 20px 16px 60px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .filter-row { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .page-wrap { padding: 16px 12px 50px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 1.6rem; }
+            .stat-card { padding: 16px; }
+            .stat-value { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="page-wrap">
+
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav" th:fragment="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <svg class="breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="9 22 9 12 15 12 15 22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <a href="/" class="breadcrumb-link">Home</a>
+                <span class="breadcrumb-separator">/</span>
+            </li>
+            <li class="breadcrumb-item">
+                <a th:href="@{/vendorBranches}" class="breadcrumb-link">Branches</a>
+                <span class="breadcrumb-separator">/</span>
+            </li>
+            <li class="breadcrumb-item active">
+                <span class="breadcrumb-text" th:text="${branch.branchId != null ? 'Branch #' + branch.branchId : 'Detail'}">Branch Details</span>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="header-section">
+        <h1 class="page-header h1">Branch <em>Transactions</em></h1>
+
+        <div class="subtitle">
+<!--            <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">-->
+<!--                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--                <circle cx="12" cy="10" r="3" stroke-width="2"/>-->
+<!--            </svg>-->
+<!--            <span th:text="${branch.address != null && branch.address.city != null-->
+<!--                    ? branch.address.city + ', ' + branch.address.country-->
+<!--                    : 'Branch #' + branch.branchId}">-->
+<!--            </span>-->
+        </div>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Transactions</div>
+            <div class="stat-value" th:text="${transactions.size()}">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Gold Traded (g)</div>
+            <div class="stat-value" th:text="${#numbers.formatDecimal(totalQty, 0, 'COMMA', 2, 'POINT') + ' g'}">— g</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Amount (₹)</div>
+            <div class="stat-value accent-green" th:text="${'₹' + #numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')}">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Successful</div>
+            <div class="stat-value accent-green" th:text="${successful}">0</div>
+        </div>
+    </div>
+
+    <!-- FILTER SECTION -->
+    <div class="filter-section" th:unless="${transactions.isEmpty()}">
+        <div class="filter-title">Filter Transactions</div>
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Type</label>
+                <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+                    <option value="">All Types</option>
+                    <option value="BUY">BUY</option>
+                    <option value="SELL">SELL</option>
+                    <option value="CONVERT_TO_PHYSICAL">CONVERT</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="SUCCESS">SUCCESS</option>
+                    <option value="FAILED">FAILED</option>
+                    <option value="PENDING">PENDING</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">User</label>
+                <select class="filter-select" id="userFilter" onchange="applyFilters()">
+                    <option value="">All Users</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="reset-btn" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+        <div class="table-scroll">
+            <table class="txn-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Gold Qty (g)</th>
+                    <th>Amount (₹)</th>
+                    <th>Date &amp; Time</th>
+                </tr>
+                </thead>
+                <tbody id="txnTableBody">
+
+                <!-- Empty State -->
+                <tr th:if="${transactions.isEmpty()}">
+                    <td colspan="7" class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 12h6m-6 4h6M9 8h.01M15 8h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="empty-state-text">No transactions recorded</div>
+                        <div class="empty-state-sub">This branch hasn't processed any transactions yet</div>
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr th:each="tx, iter : ${transactions}"
+                    th:attr="data-type=${tx.transactionType},
+                                 data-status=${tx.transactionStatus},
+                                 data-user=${tx.userName}">
+
+                    <td class="td-num" th:text="${iter.count}"></td>
+
+                    <td class="td-user">
+                        <span th:text="${tx.userName != null ? tx.userName : '—'}"></span>
+                        <span class="td-uid"
+                              th:if="${tx.userId != null}"
+                              th:text="${'#' + tx.userId}">
+                            </span>
+                    </td>
+
+                    <td>
+                            <span th:if="${tx.transactionType == 'BUY'}"
+                                  class="type-badge buy">↓ BUY</span>
+                        <span th:if="${tx.transactionType == 'SELL'}"
+                              class="type-badge sell">↑ SELL</span>
+                        <span th:if="${tx.transactionType == 'CONVERT_TO_PHYSICAL'}"
+                              class="type-badge convert">⇄ CONVERT</span>
+                        <span th:if="${tx.transactionType != 'BUY'
+                                           and tx.transactionType != 'SELL'
+                                           and tx.transactionType != 'CONVERT_TO_PHYSICAL'}"
+                              class="type-badge other"
+                              th:text="${tx.transactionType != null ? tx.transactionType : '—'}">
+                            </span>
+                    </td>
+
+                    <td>
+                            <span th:if="${tx.transactionStatus == 'SUCCESS'}"
+                                  class="status-badge success">✓ SUCCESS</span>
+                        <span th:if="${tx.transactionStatus == 'FAILED'}"
+                              class="status-badge failed">✗ FAILED</span>
+                        <span th:if="${tx.transactionStatus != 'SUCCESS'
+                                           and tx.transactionStatus != 'FAILED'}"
+                              class="status-badge pending"
+                              th:text="${tx.transactionStatus != null ? tx.transactionStatus : '—'}">
+                            </span>
+                    </td>
+
+                    <td class="td-qty"
+                        th:text="${tx.quantity != null
+                                           ? #numbers.formatDecimal(tx.quantity, 0, 'COMMA', 2, 'POINT') + ' g'
+                                           : '—'}">
+                    </td>
+
+                    <td class="td-amount"
+                        th:text="${tx.amount != null
+                                           ? '₹' + #numbers.formatDecimal(tx.amount, 0, 'COMMA', 2, 'POINT')
+                                           : '—'}">
+                    </td>
+
+                    <td class="td-date"
+                        th:text="${tx.createdAt != null
+                                           ? tx.createdAt.replace('T', '  ')
+                                           : 'N/A'}">
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span class="count-badge" id="countBadge"
+                  th:text="${transactions.size() + (transactions.size() == 1 ? ' transaction' : ' transactions')}">
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-dot"></div>
+        <div class="footer-text">Digital Gold Wallet System</div>
+        <div class="footer-dot"></div>
+    </div>
+</footer>
+
+<script>
+    /* Build user dropdown from rendered rows */
+    (function () {
+        const sel = document.getElementById('userFilter');
+        if (!sel) return;
+        const users = new Set();
+        document.querySelectorAll('#txnTableBody tr[data-user]').forEach(row => {
+            const u = row.dataset.user;
+            if (u && u !== 'null') users.add(u);
+        });
+        [...users].sort().forEach(u => {
+            const o = document.createElement('option');
+            o.value = o.textContent = u;
+            sel.appendChild(o);
+        });
+    })();
+
+    function applyFilters() {
+        const type   = document.getElementById('typeFilter').value;
+        const status = document.getElementById('statusFilter').value;
+        const user   = document.getElementById('userFilter').value;
+        let visible  = 0;
+
+        document.querySelectorAll('#txnTableBody tr[data-type]').forEach(row => {
+            const match =
+                (!type   || row.dataset.type   === type)   &&
+                (!status || row.dataset.status === status) &&
+                (!user   || row.dataset.user   === user);
+            row.classList.toggle('tx-hidden', !match);
+            if (match) visible++;
+        });
+
+        document.getElementById('countBadge').textContent =
+            visible + (visible === 1 ? ' transaction' : ' transactions');
+    }
+
+    function resetFilters() {
+        ['typeFilter', 'statusFilter', 'userFilter'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        applyFilters();
+    }
+</script>
+
+</body>
+</html>

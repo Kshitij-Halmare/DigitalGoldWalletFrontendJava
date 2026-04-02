@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vendor Branches — Digital Gold Wallet System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/vendorBranchesAddressesStyle.css}"/>
+    <style>
+        /* ─── FILTER PANEL ─────────────────────────────────────────── */
+        .filter-panel {
+            background: #fffdf7;
+            border: 1px solid #e8dcc8;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(212,175,55,0.07);
+        }
+        .filter-panel-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #7a6420;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-panel-title::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 2px;
+            background: #d4af37;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px 20px;
+            align-items: end;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #a08840;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .filter-group input,
+        .filter-group select {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: #2d2a1e;
+            background: #fff;
+            border: 1px solid #d8c99a;
+            border-radius: 6px;
+            padding: 8px 11px;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.13);
+        }
+        .filter-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a08840'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+            cursor: pointer;
+        }
+        .filter-qty-range { display: flex; gap: 6px; align-items: center; }
+        .filter-qty-range input { flex: 1; }
+        .filter-qty-sep { font-size: 0.8rem; color: #bba96e; font-weight: 500; white-space: nowrap; }
+        .filter-actions { display: flex; gap: 10px; align-items: flex-end; }
+        .btn-filter-apply {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #d4af37;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 9px 20px;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.12s;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+        .btn-filter-apply:hover { background: #b8941e; transform: translateY(-1px); }
+        .btn-filter-reset {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: transparent;
+            color: #a08840;
+            border: 1px solid #d8c99a;
+            border-radius: 6px;
+            padding: 9px 14px;
+            cursor: pointer;
+            transition: border-color 0.18s, color 0.18s;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1.4;
+        }
+        .btn-filter-reset:hover { border-color: #d4af37; color: #7a6420; }
+
+        /* ─── PAGINATION ────────────────────────────────────────────── */
+        .pagination-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px 20px;
+            border-top: 1px solid #eee5ce;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .pagination-info {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            color: #a08840;
+        }
+        .pagination-info strong { color: #2d2a1e; font-weight: 600; }
+        .pagination-bar { display: flex; align-items: center; gap: 4px; }
+        .page-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border: 1px solid #d8c99a;
+            border-radius: 6px;
+            background: #fff;
+            color: #7a6420;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .page-btn:hover:not(.active):not(.disabled) {
+            background: #fdf4da;
+            border-color: #d4af37;
+            color: #2d2a1e;
+        }
+        .page-btn.active {
+            background: linear-gradient(135deg, #d4af37, #c09a28);
+            border-color: #c09a28;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(212,175,55,0.28);
+            cursor: default;
+        }
+        .page-btn.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .page-ellipsis {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: #bba96e;
+            padding: 0 4px;
+            user-select: none;
+        }
+
+        /* ─── EDIT MODAL ────────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            display: none; align-items: center; justify-content: center;
+            background: rgba(30,22,5,0.52);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+        }
+        .modal {
+            background: #fffdf7;
+            border-radius: 14px;
+            padding: 0;
+            max-width: 540px;
+            width: 92%;
+            max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 48px rgba(30,22,5,0.22), 0 2px 8px rgba(212,175,55,0.12);
+            border: 1px solid #e8dcc8;
+            animation: modalSlideIn 0.22s ease;
+        }
+        @keyframes modalSlideIn {
+            from { opacity:0; transform: translateY(18px) scale(0.97); }
+            to   { opacity:1; transform: translateY(0)    scale(1);    }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid #eee5ce;
+            background: linear-gradient(135deg, #fffef9 0%, #fdf8ec 100%);
+            border-radius: 14px 14px 0 0;
+        }
+        .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 500; color: #2d2a1e; }
+        .modal-title span { font-style: italic; color: #b8941e; }
+        .modal-close {
+            background: none; border: 1px solid #e0d4b0;
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 1rem; cursor: pointer; color: #a08840;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .modal-close:hover { background: #f5ecd0; color: #7a6420; border-color: #c9a84c; }
+        .modal-body {
+            padding: 24px 28px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 20px;
+        }
+        .modal-field { display: flex; flex-direction: column; gap: 6px; }
+        .modal-field.full-width { grid-column: span 2; }
+        .modal-field label {
+            font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600;
+            color: #a08840; text-transform: uppercase; letter-spacing: 0.07em;
+        }
+        .modal-field input {
+            font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: #2d2a1e;
+            background: #fff; border: 1px solid #d8c99a; border-radius: 7px;
+            padding: 10px 13px; transition: border-color 0.18s, box-shadow 0.18s;
+            outline: none; width: 100%; box-sizing: border-box;
+        }
+        .modal-field input:focus { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
+        .modal-divider {
+            grid-column: span 2; height: 1px; background: #ede3c8; margin: 2px 0; position: relative;
+        }
+        .modal-divider::after {
+            content: 'Address'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: #fffdf7; padding: 0 10px;
+            font-family: 'DM Sans', sans-serif; font-size: 0.68rem; font-weight: 600;
+            color: #bba96e; text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .modal-footer {
+            display: flex; justify-content: flex-end; align-items: center; gap: 12px;
+            padding: 18px 28px 24px; background: #fdf8ec;
+            border-top: 1px solid #eee5ce; border-radius: 0 0 14px 14px;
+        }
+        .btn-cancel {
+            font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+            background: transparent; color: #a08840; border: 1px solid #d8c99a;
+            padding: 9px 18px; border-radius: 7px; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-cancel:hover { background: #f5ecd0; border-color: #c9a84c; }
+        .btn-confirm {
+            font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+            background: linear-gradient(135deg, #d4af37 0%, #c09a28 100%);
+            color: #fff; border: none; padding: 9px 22px; border-radius: 7px;
+            cursor: pointer; transition: all 0.18s; letter-spacing: 0.02em;
+            box-shadow: 0 2px 8px rgba(212,175,55,0.25);
+        }
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #c09a28 0%, #a8841c 100%);
+            transform: translateY(-1px); box-shadow: 0 4px 14px rgba(212,175,55,0.35);
+        }
+
+        /* ─── FLASH MESSAGES ────────────────────────────────────────── */
+        .flash-success {
+            background: linear-gradient(135deg, #edfdf3, #d4f5e2); color: #1a5c36;
+            border: 1px solid #a8dfc0; border-left: 4px solid #2ecc71; border-radius: 8px;
+            padding: 13px 18px; margin-bottom: 18px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+        }
+        .flash-error {
+            background: linear-gradient(135deg, #fff0f0, #fde2e2); color: #7a1c1c;
+            border: 1px solid #f5c6c6; border-left: 4px solid #e74c3c; border-radius: 8px;
+            padding: 13px 18px; margin-bottom: 18px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+        }
+        /* ─── BREADCRUMB ─────────────────────────────────────────────── */
+        <nav aria-label="breadcrumb" th:fragment="breadcrumb" class="breadcrumb-nav">
+    <style>
+        .breadcrumb {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            padding: 0;
+            margin: 16px 0;
+        }
+        .breadcrumb-item { display: flex; align-items: center; gap: 6px; }
+        .breadcrumb-link { color: #7a6420; text-decoration: none; font-weight: 500; }
+        .breadcrumb-link:hover { color: #d4af37; }
+        .breadcrumb-text { color: #2d2a1e; font-weight: 600; }
+        .breadcrumb-separator { color: #bba96e; margin: 0 4px; }
+        .breadcrumb-icon { width: 16px; height: 16px; color: #7a6420; }
+    </style>
+    </head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BREADCRUMB FRAGMENT - INCLUDE THIS
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div class="page-wrap">
+    <div class="top-nav">
+        <a class="back-link" th:href="@{/}">Back to Home</a>
+        <div class="nav-brand">Digital Gold Wallet System</div>
+    </div>
+
+    <div  th:replace="fragments/breadcrumb :: breadcrumb"></div>
+
+    <div class="page-header">
+        <h1>Vendor <em>Branches</em></h1>
+        <p class="page-sub" th:text="${activeFilter}">Manage vendor branch locations and gold inventory</p>
+    </div>
+
+    <div class="flash-success" th:if="${successMsg}" th:text="${successMsg}"></div>
+    <div class="flash-error"   th:if="${errorMsg}"   th:text="${errorMsg}"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FILTER PANEL
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="filter-panel">
+        <div class="filter-panel-title">Filter &amp; Sort</div>
+        <form method="get" th:action="@{/vendorBranches}">
+            <!-- Always reset to page 0 when a new filter is applied -->
+            <input type="hidden" name="page" value="0"/>
+            <div class="filter-grid">
+
+                <div class="filter-group">
+                    <label>City Search</label>
+                    <input type="text" name="citySearch" placeholder="Type any city…"
+                           th:value="${filter?.citySearch}"/>
+                </div>
+
+                <div class="filter-group">
+                    <label>City (Exact)</label>
+                    <select name="city">
+                        <option value="">All Cities</option>
+                        <option th:each="c : ${allCities}" th:value="${c}" th:text="${c}"
+                                th:selected="${filter?.city == c}"></option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>State</label>
+                    <select name="state">
+                        <option value="">All States</option>
+                        <option th:each="s : ${allStates}" th:value="${s}" th:text="${s}"
+                                th:selected="${filter?.state == s}"></option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Country</label>
+                    <select name="country">
+                        <option value="">All Countries</option>
+                        <option th:each="co : ${allCountries}" th:value="${co}" th:text="${co}"
+                                th:selected="${filter?.country == co}"></option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Postal Code</label>
+                    <input type="text" name="postalCode" placeholder="e.g. 411001"
+                           th:value="${filter?.postalCode}"/>
+                </div>
+
+                <div class="filter-group">
+                    <label>Gold Qty Range (g)</label>
+                    <div class="filter-qty-range">
+                        <input type="number" name="qtyMin" placeholder="Min" step="0.01" min="0"
+                               th:value="${filter?.qtyMin}"/>
+                        <span class="filter-qty-sep">–</span>
+                        <input type="number" name="qtyMax" placeholder="Max" step="0.01" min="0"
+                               th:value="${filter?.qtyMax}"/>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Sort by Qty</label>
+                    <select name="sort">
+                        <option value="none" th:selected="${filter?.sort == 'none' or filter?.sort == null}">No Sort</option>
+                        <option value="asc"  th:selected="${filter?.sort == 'asc'}">Qty ↑ Ascending</option>
+                        <option value="desc" th:selected="${filter?.sort == 'desc'}">Qty ↓ Descending</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter-apply">Apply</button>
+                    <a th:href="@{/vendorBranches}" class="btn-filter-reset">Reset</a>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- ═══════════════ TABLE ═══════════════ -->
+    <div class="table-card">
+        <div class="table-scroll">
+            <table class="branch-table">
+                <thead>
+                <tr>
+                    <th>#</th><th>City</th><th>State</th><th>Country</th>
+                    <th>Address</th><th>Postal</th><th>Gold Qty (g)</th>
+                    <th>Vendor Name</th><th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(branchPage)}">
+                    <td colspan="9" class="table-empty">No branches match your criteria.</td>
+                </tr>
+                <tr th:each="branch, stat : ${branchPage}" class="branch-row"
+                    th:data-branch-id="${branch.branchId}"
+                    th:data-quantity="${branch.quantity != null ? branch.quantity : 0}"
+                    th:data-street="${branch.address != null ? branch.address.street : ''}"
+                    th:data-city="${branch.address != null ? branch.address.city : ''}"
+                    th:data-state="${branch.address != null ? branch.address.state : ''}"
+                    th:data-postal="${branch.address != null ? branch.address.postalCode : ''}"
+                    th:data-country="${branch.address != null ? branch.address.country : ''}">
+                    <td th:text="${T(java.lang.String).format('%02d', stat.count)}"></td>
+                    <td th:text="${branch.address?.city ?: '—'}"></td>
+                    <td th:text="${branch.address?.state ?: '—'}"></td>
+                    <td th:text="${branch.address?.country ?: '—'}"></td>
+                    <td th:text="${branch.address?.street ?: '—'}"></td>
+                    <td th:text="${branch.address?.postalCode ?: '—'}"></td>
+                    <td th:text="${branch.quantity != null ? #numbers.formatDecimal(branch.quantity, 0, 'COMMA', 2, 'POINT') + ' g' : '—'}"></td>
+                    <td th:text="${branch.vendors?.vendorName ?: '—'}"></td>
+                    <td class="td-actions">
+                        <a th:href="@{/vendorBranches/{id}(id=${branch.branchId})}" class="action-btn btn-view">View</a>
+                        <button type="button" class="action-btn js-edit-btn">Edit</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             PAGINATION
+             Reads from pagedResult (PagedBranchResult) which wraps the
+             "page" object Spring Data REST returns on every HAL response:
+               { size, totalElements, totalPages, number }
+             Page numbers are 0-based (matching Spring Data REST).
+             The template shows 1-based numbers to the user.
+             ═══════════════════════════════════════════════════════════════ -->
+        <div class="pagination-wrap" th:if="${pagedResult != null and pagedResult.totalPages > 1}">
+
+            <div class="pagination-info">
+                Page <strong th:text="${pagedResult.currentPage + 1}">1</strong>
+                of <strong th:text="${pagedResult.totalPages}">?</strong>
+                &mdash;
+                <strong th:text="${pagedResult.totalElements}">0</strong> branches total
+            </div>
+
+            <nav class="pagination-bar" aria-label="Branch pages">
+
+                <!-- ← Previous -->
+                <a th:if="${pagedResult.hasPrevious}"
+                   th:href="@{/vendorBranches(page=${pagedResult.previousPage},citySearch=${filter?.citySearch},city=${filter?.city},state=${filter?.state},country=${filter?.country},postalCode=${filter?.postalCode},qtyMin=${filter?.qtyMin},qtyMax=${filter?.qtyMax},sort=${filter?.sort})}"
+                   class="page-btn" title="Previous page">&#8592;</a>
+                <span th:unless="${pagedResult.hasPrevious}" class="page-btn disabled">&#8592;</span>
+
+                <!-- Numbered buttons with smart window + ellipsis -->
+                <th:block th:each="p : ${pagedResult.pageWindow}">
+                    <span th:if="${p == -1}" class="page-ellipsis">…</span>
+                    <span th:if="${p != -1 and p == pagedResult.currentPage}"
+                          class="page-btn active" th:text="${p + 1}">1</span>
+                    <a th:if="${p != -1 and p != pagedResult.currentPage}"
+                       th:href="@{/vendorBranches(page=${p},citySearch=${filter?.citySearch},city=${filter?.city},state=${filter?.state},country=${filter?.country},postalCode=${filter?.postalCode},qtyMin=${filter?.qtyMin},qtyMax=${filter?.qtyMax},sort=${filter?.sort})}"
+                       class="page-btn" th:text="${p + 1}">2</a>
+                </th:block>
+
+                <!-- → Next -->
+                <a th:if="${pagedResult.hasNext}"
+                   th:href="@{/vendorBranches(page=${pagedResult.nextPage},citySearch=${filter?.citySearch},city=${filter?.city},state=${filter?.state},country=${filter?.country},postalCode=${filter?.postalCode},qtyMin=${filter?.qtyMin},qtyMax=${filter?.qtyMax},sort=${filter?.sort})}"
+                   class="page-btn" title="Next page">&#8594;</a>
+                <span th:unless="${pagedResult.hasNext}" class="page-btn disabled">&#8594;</span>
+
+            </nav>
+        </div>
+
+    </div><!-- /table-card -->
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EDIT MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Update <span>Branch</span></div>
+            <button type="button" class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <form id="editForm" method="post">
+            <div class="modal-body">
+                <div class="modal-field full-width">
+                    <label>Gold Quantity (g)</label>
+                    <input type="number" id="editQuantity" name="quantity" step="0.01" min="0" required placeholder="e.g. 1250.00"/>
+                </div>
+                <div class="modal-divider"></div>
+                <div class="modal-field full-width">
+                    <label>Street</label>
+                    <input type="text" id="editStreet" name="street" required placeholder="Street address"/>
+                </div>
+                <div class="modal-field">
+                    <label>City</label>
+                    <input type="text" id="editCity" name="city" required placeholder="City"/>
+                </div>
+                <div class="modal-field">
+                    <label>State</label>
+                    <input type="text" id="editState" name="state" required placeholder="State"/>
+                </div>
+                <div class="modal-field">
+                    <label>Postal Code</label>
+                    <input type="text" id="editPostal" name="postalCode" required placeholder="Postal code"/>
+                </div>
+                <div class="modal-field">
+                    <label>Country</label>
+                    <input type="text" id="editCountry" name="country" required placeholder="Country"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-confirm">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const tbody     = document.querySelector('tbody');
+    const editModal = document.getElementById('editModal');
+    const editForm  = document.getElementById('editForm');
+
+    tbody.addEventListener('click', function(e){
+        const row = e.target.closest('.branch-row');
+        if (!row) return;
+        if (e.target.closest('.js-edit-btn')) {
+            document.getElementById('editQuantity').value = row.dataset.quantity;
+            document.getElementById('editStreet').value   = row.dataset.street;
+            document.getElementById('editCity').value     = row.dataset.city;
+            document.getElementById('editState').value    = row.dataset.state;
+            document.getElementById('editPostal').value   = row.dataset.postal;
+            document.getElementById('editCountry').value  = row.dataset.country;
+            editForm.action = '/vendorBranches/' + row.dataset.branchId;
+            editModal.style.display = 'flex';
+            return;
+        }
+        if (e.target.closest('.btn-view')) {
+            window.location.href = `/vendorBranches/${row.dataset.branchId}`;
+            return;
+        }
+        if (!e.target.closest('button') && !e.target.closest('a')) {
+            window.location.href = `/vendorBranches/${row.dataset.branchId}`;
+        }
+    });
+
+    function closeModal() { editModal.style.display = 'none'; }
+    editModal.addEventListener('click', e => { if (e.target === editModal) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
