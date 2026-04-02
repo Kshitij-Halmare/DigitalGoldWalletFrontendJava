@@ -13,7 +13,7 @@ public class VendorBranchService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String BASE_URL = "http://localhost:8080/vendors";
+    private final String BASE_URL = "http://172.16.160.128:8080/vendors";
 
     public Map getVendor(Integer id) {
         ResponseEntity<Map> response =
@@ -25,7 +25,7 @@ public class VendorBranchService {
     public List<Map<String, Object>> getBranches(Integer id) {
 
         String url =
-                "http://localhost:8080/vendorBranches/search/findByVendorsVendorId?vendorId="
+                "http://172.16.160.128:8080/vendorBranches/search/findByVendorsVendorId?vendorId="
                         + id + "&projection=branchDetails";
 
         ResponseEntity<Map> response =
