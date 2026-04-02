@@ -16,6 +16,7 @@
         tr:hover td { background:rgba(212,175,55,0.08); cursor:pointer; }
         .search-container { display:flex; flex-direction:column; gap:5px; margin-top:10px; }
         input { background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:4px; font-size:0.8rem; }
+        input:focus { border-color: var(--gold); outline: none; }
         button { background:var(--gold); color:#000; border:none; padding:8px 15px; font-weight:600; border-radius:3px; cursor:pointer; font-size:0.7rem; text-transform:uppercase; transition:0.3s; }
         button:hover { opacity:0.8; box-shadow:0 0 10px var(--gold); }
         .btn-outline { background:transparent; border:1px solid var(--gold); color:var(--gold); margin-left:5px; }
@@ -23,20 +24,24 @@
         .page-btn { background:transparent; border:1px solid #444; color:#fff; width:35px; height:35px; margin:0 5px; border-radius:50%; cursor:pointer; }
         .page-btn.active { border-color:var(--gold); color:var(--gold); }
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; backdrop-filter:blur(5px); }
-        .modal-card { background:var(--modal-bg); border:1px solid var(--gold); padding:30px; width:420px; border-radius:12px; box-shadow:0 10px 50px rgba(0,0,0,0.5); animation:fadeIn 0.3s ease; }
+        .modal-overlay.open { display:flex; }
+        .modal-card { background:var(--modal-bg); border:1px solid var(--gold); padding:30px; width:460px; border-radius:12px; box-shadow:0 10px 50px rgba(0,0,0,0.5); animation:fadeIn 0.3s ease; max-height:90vh; overflow-y:auto; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)} }
         .modal-card h3 { font-family:'Playfair Display',serif; color:var(--gold); margin-top:0; text-transform:uppercase; letter-spacing:2px; border-bottom:1px solid rgba(212,175,55,0.2); padding-bottom:15px; margin-bottom:20px; }
-        .modal-form { display:flex; flex-direction:column; gap:12px; }
-        .modal-form label { font-size:0.75rem; color:#888; text-transform:uppercase; display:block; margin-bottom:3px; }
-        .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+        .form-group { margin-bottom:14px; }
+        .form-group label { font-size:0.75rem; color:#888; text-transform:uppercase; display:block; margin-bottom:4px; }
+        .form-group input { width:100%; box-sizing:border-box; }
         .error-text { color:red; font-size:11px; margin-top:3px; min-height:14px; }
+        .section-title { color:var(--gold); font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; margin:18px 0 10px; border-bottom:1px solid rgba(212,175,55,0.15); padding-bottom:6px; }
+        .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+        .row-2 { display:flex; gap:12px; }
+        .row-2 .form-group { flex:1; }
         .breadcrumb { width:90%; margin:0 auto 20px auto; color:#aaa; font-size:0.85rem; }
         .breadcrumb span { cursor:pointer; }
         .breadcrumb .separator { margin:0 8px; color:#555; }
         .breadcrumb .active { color:var(--gold); cursor:default; }
         .breadcrumb span:hover:not(.active) { color:var(--gold); }
-        .row-2 { display:flex; gap:10px; }
-        .row-2 > div { flex:1; }
+        .flash-success { background:rgba(212,175,55,0.1); border:1px solid var(--gold); color:var(--gold); padding:12px 20px; border-radius:6px; width:90%; margin:0 auto 20px auto; text-align:center; font-size:0.85rem; }
     </style>
 </head>
 <body>
@@ -50,8 +55,10 @@
 <h2>Vault Members</h2>
 <div class="subtitle">Digital Finance • Gold Backed</div>
 
+<div class="flash-success" th:if="${success}" th:text="${success}"></div>
+
 <div class="top-bar">
-    <button onclick="showModal('add')">+ Create New Account</button>
+    <button onclick="document.getElementById('addModal').classList.add('open')">+ Create New Account</button>
 </div>
 
 <table>
@@ -63,7 +70,7 @@
             Name
             <div class="search-container">
                 <input id="nameSearch" placeholder="Filter name...">
-                <div>
+                <div style="display:flex;gap:5px;margin-top:4px;">
                     <button onclick="searchUsers()">Find</button>
                     <button class="btn-outline" onclick="clearSearch()">Clear</button>
                 </div>
@@ -73,7 +80,7 @@
             Email
             <div class="search-container">
                 <input id="emailSearch" placeholder="Filter email...">
-                <div>
+                <div style="display:flex;gap:5px;margin-top:4px;">
                     <button onclick="searchUsers()">Find</button>
                     <button class="btn-outline" onclick="clearSearch()">Clear</button>
                 </div>
@@ -85,31 +92,30 @@
     </tr>
     </thead>
     <tbody id="usersTable">
-    <!-- Thymeleaf renders first page server-side for fast initial load -->
     <th:block th:if="${users != null and !#lists.isEmpty(users)}">
-        <!-- Use data-* for strings (Thymeleaf 3.1 blocks strings in th:onclick) -->
         <tr th:each="user, stat : ${users}"
-            th:attr="data-uid=${user.userId}"
-            onclick="window.location.href='/members/'+this.dataset.uid"
+            th:attr="data-uid=${user.getUserId()}, data-prefix=${detailUrlPrefix}"
+            onclick="window.location.href = this.dataset.prefix + this.dataset.uid"
             style="cursor:pointer">
             <td th:text="${stat.index + 1 + currentPage * 20}">1</td>
-            <td style="color:var(--gold)" th:text="'#' + ${user.userId}">#1</td>
+            <td style="color:var(--gold)" th:text="'#' + ${user.getUserId()}">#1</td>
             <td th:text="${user.name}">Name</td>
             <td th:text="${user.email}">Email</td>
             <td th:text="'₹' + ${user.balance}">₹0</td>
             <td th:text="${user.createdAt != null ? #strings.substring(user.createdAt,0,10) : '-'}">Date</td>
             <td onclick="event.stopPropagation()">
-                <!-- Deposit: only needs numeric id — allowed in th:onclick -->
-                <button th:onclick="|showModal('deposit',{id:${user.userId}})|">Deposit</button>
-                <!-- Edit: needs strings → use data-* attributes, read in openEdit() -->
-                <button class="btn-outline"
-                        th:attr="data-uid=${user.userId}, data-name=${user.name}, data-email=${user.email}"
-                        onclick="openEdit(this)">Edit</button>
+                <button type="button"
+                        th:attr="data-uid=${user.getUserId()}"
+                        onclick="showDepositModal(this.dataset.uid)">Deposit</button>
+
+                <button type="button" class="btn-outline"
+                        th:attr="data-uid=${user.getUserId()}, data-name=${user.name}, data-email=${user.email}"
+                        onclick="openEditModal(this)">Edit</button>
             </td>
         </tr>
     </th:block>
     <th:block th:if="${users == null or #lists.isEmpty(users)}">
-        <tr id="emptyRow">
+        <tr>
             <td colspan="7" style="text-align:center;padding:80px;color:#888;font-style:italic;">
                 <div style="font-size:1.2rem;color:var(--gold);margin-bottom:10px;">No members found</div>
                 Add your first member using the button above.
@@ -119,329 +125,245 @@
     </tbody>
 </table>
 
-<!-- Pagination — rendered server-side initially, rebuilt by JS after search/page change -->
 <div id="pagination" class="pagination">
     <th:block th:if="${totalPages > 1}">
         <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <button class="page-btn"
-                    th:classappend="${i == currentPage} ? 'active'"
-                    th:onclick="|loadUsers(${i})|"
+            <button type="button" class="page-btn"
+                    th:classappend="${i == currentPage} ? ' active'"
+                    th:attr="data-page=${i}"
+                    onclick="loadPage(this.dataset.page)"
                     th:text="${i + 1}">1</button>
         </th:block>
     </th:block>
 </div>
 
-<!-- ===================== MODAL ===================== -->
-<div id="uiModal" class="modal-overlay">
+
+<div id="addModal" class="modal-overlay" th:classappend="${modal == 'add'} ? ' open'">
     <div class="modal-card">
-        <h3 id="modalTitle">Account Action</h3>
-        <div class="modal-form">
+        <h3>Create New Vault</h3>
+        <form th:action="@{/members/new}" method="post">
 
-            <!-- Name -->
-            <div id="field-name">
+            <div class="section-title">Account Info</div>
+
+            <div class="form-group">
                 <label>Account Holder Name</label>
-                <input type="text" id="inputName" style="width:100%;box-sizing:border-box;">
-                <div id="nameError" class="error-text"></div>
+                <input type="text" name="name" th:value="${addForm != null ? addForm.get('name') : ''}" placeholder="Full name">
+                <div class="error-text" th:text="${addErrors != null ? addErrors.get('name') : ''}"></div>
             </div>
-
-            <!-- Email -->
-            <div id="field-email">
+            <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="inputEmail" style="width:100%;box-sizing:border-box;">
-                <div id="emailError" class="error-text"></div>
+                <input type="email" name="email" th:value="${addForm != null ? addForm.get('email') : ''}" placeholder="email@example.com">
+                <div class="error-text" th:text="${addErrors != null ? addErrors.get('email') : ''}"></div>
             </div>
 
-            <!-- Address fields (add only) -->
-            <div id="address-section">
-                <div id="field-street">
-                    <label>Street</label>
-                    <input type="text" id="inputStreet" style="width:100%;box-sizing:border-box;">
-                    <div id="streetError" class="error-text"></div>
+            <div class="section-title">Address</div>
+
+            <div class="form-group">
+                <label>Street</label>
+                <input type="text" name="street" th:value="${addForm != null ? addForm.get('street') : ''}" placeholder="123 Main St">
+                <div class="error-text" th:text="${addErrors != null ? addErrors.get('street') : ''}"></div>
+            </div>
+            <div class="row-2">
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" name="city" th:value="${addForm != null ? addForm.get('city') : ''}" placeholder="Mumbai">
+                    <div class="error-text" th:text="${addErrors != null ? addErrors.get('city') : ''}"></div>
                 </div>
-                <div class="row-2">
-                    <div>
-                        <label>City</label>
-                        <input type="text" id="inputCity" style="width:100%;box-sizing:border-box;">
-                        <div id="cityError" class="error-text"></div>
-                    </div>
-                    <div>
-                        <label>State</label>
-                        <input type="text" id="inputState" style="width:100%;box-sizing:border-box;">
-                        <div id="stateError" class="error-text"></div>
-                    </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" name="state" th:value="${addForm != null ? addForm.get('state') : ''}" placeholder="Maharashtra">
+                    <div class="error-text" th:text="${addErrors != null ? addErrors.get('state') : ''}"></div>
                 </div>
-                <div class="row-2">
-                    <div>
-                        <label>Postal Code</label>
-                        <input type="text" id="inputPostal" style="width:100%;box-sizing:border-box;">
-                        <div id="postalError" class="error-text"></div>
-                    </div>
-                    <div>
-                        <label>Country</label>
-                        <input type="text" id="inputCountry" style="width:100%;box-sizing:border-box;">
-                        <div id="countryError" class="error-text"></div>
-                    </div>
+            </div>
+            <div class="row-2">
+                <div class="form-group">
+                    <label>Postal Code</label>
+                    <input type="text" name="postalCode" th:value="${addForm != null ? addForm.get('postalCode') : ''}" placeholder="400001">
+                    <div class="error-text" th:text="${addErrors != null ? addErrors.get('postalCode') : ''}"></div>
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" name="country" th:value="${addForm != null ? addForm.get('country') : ''}" placeholder="India">
+                    <div class="error-text" th:text="${addErrors != null ? addErrors.get('country') : ''}"></div>
                 </div>
             </div>
 
-            <!-- Deposit amount -->
-            <div id="field-amount" style="display:none;">
-                <label>Deposit Amount (₹)</label>
-                <input type="number" id="inputAmount" min="1" step="0.01" style="width:100%;box-sizing:border-box;">
-                <div id="depositError" class="error-text"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-outline"
+                        onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+                <button type="submit">Create Account</button>
             </div>
-
-        </div>
-        <div class="modal-actions">
-            <button class="btn-outline" onclick="closeModal()">Cancel</button>
-            <button id="modalSubmitBtn">Confirm</button>
-        </div>
+        </form>
     </div>
 </div>
 
+
+<div id="editModal" class="modal-overlay" th:classappend="${modal == 'edit'} ? ' open'">
+    <div class="modal-card">
+        <h3>Edit Member</h3>
+        <form id="editForm" th:action="@{/members/__${editForm != null && editForm.get('id') != null ? editForm.get('id') : 0}__/edit}" method="post">
+
+            <input type="hidden" name="originalEmail" id="editOriginalEmail" th:value="${editForm != null ? editForm.get('originalEmail') : ''}">
+
+            <div class="form-group">
+                <label>Account Holder Name</label>
+                <input type="text" name="name" id="editName"
+                       th:value="${editForm != null ? editForm.get('name') : ''}" placeholder="Full name">
+                <div class="error-text" th:text="${editErrors != null ? editErrors.get('name') : ''}"></div>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" id="editEmail"
+                       th:value="${editForm != null ? editForm.get('email') : ''}" placeholder="email@example.com">
+                <div class="error-text" th:text="${editErrors != null ? editErrors.get('email') : ''}"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-outline"
+                        onclick="document.getElementById('editModal').classList.remove('open')">Cancel</button>
+                <button type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="depositModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>Gold Deposit</h3>
+        <form id="depositForm" method="post">
+            <div class="form-group">
+                <label>Deposit Amount (₹)</label>
+                <input type="number" id="depositAmount" name="amount" min="1" step="0.01" placeholder="Enter amount">
+                <div class="error-text" id="depositError"></div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-outline"
+                        onclick="document.getElementById('depositModal').classList.remove('open')">Cancel</button>
+                <button type="button" onclick="submitDeposit()">Confirm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <script th:inline="javascript">
-    // ── Config ──────────────────────────────────────────────────────────────────
-    const BACKEND_URL  = /*[[${@environment.getProperty('backend.base-url')}]]*/ "http://localhost:8080";
-    const BASE_URL     = BACKEND_URL + "/users";
-    const DEPOSIT_URL  = BACKEND_URL + "/user/deposit";
+    const BACKEND_URL = /*[[${@environment.getProperty('backend.base-url')}]]*/ "http://localhost:8080";
+    const BASE_URL    = BACKEND_URL + "/users";
+    let currentPage   = /*[[${currentPage}]]*/ 0;
+    let currentURL    = BASE_URL;
 
-    let currentPage = /*[[${currentPage}]]*/ 0;
-    let currentURL  = BASE_URL;
-    let isSearchMode = false; // track if we are in search mode
+    const detailPrefix = /*[[${detailUrlPrefix}]]*/ "/members/";
 
-    const modal          = document.getElementById('uiModal');
-    const modalSubmitBtn = document.getElementById('modalSubmitBtn');
+    function openEditModal(btn) {
+        const id    = btn.dataset.uid;
+        const name  = btn.dataset.name;
+        const email = btn.dataset.email;
 
-    // ── Helpers ─────────────────────────────────────────────────────────────────
-    function formatDate(d) {
-        if (!d) return '-';
-        const dt = new Date(d);
-        return `${String(dt.getDate()).padStart(2,'0')} ${dt.toLocaleString('default',{month:'long'})} ${dt.getFullYear()}`;
+        document.getElementById('editName').value          = name;
+        document.getElementById('editEmail').value         = email;
+        document.getElementById('editOriginalEmail').value = email;
+        document.getElementById('editForm').action         = '/members/' + id + '/edit';
+
+        document.getElementById('editModal').classList.add('open');
     }
 
-    function clearErrors() {
-        document.querySelectorAll('.error-text').forEach(el => el.innerText = '');
+    let depositUserId = null;
+
+    function showDepositModal(userId) {
+        depositUserId = userId;
+        document.getElementById('depositAmount').value = '';
+        document.getElementById('depositError').innerText = '';
+        document.getElementById('depositModal').classList.add('open');
     }
 
-    // ── openEdit: reads data-* from Edit button (Thymeleaf 3.1 blocks strings in th:onclick) ──
-    function openEdit(btn) {
-        showModal('edit', {
-            id:    btn.dataset.uid,
-            name:  btn.dataset.name,
-            email: btn.dataset.email
-        });
-    }
-
-    // ── Modal ────────────────────────────────────────────────────────────────────
-    function showModal(mode, data = {}) {
-        clearErrors();
-        ['field-name','field-email','address-section','field-amount']
-            .forEach(id => document.getElementById(id).style.display = 'none');
-
-        if (mode === 'add') {
-            document.getElementById('modalTitle').innerText = 'Create New Vault';
-            ['field-name','field-email','address-section'].forEach(id => document.getElementById(id).style.display = 'block');
-            ['inputName','inputEmail','inputStreet','inputCity','inputState','inputPostal','inputCountry']
-                .forEach(id => document.getElementById(id).value = '');
-            modalSubmitBtn.onclick = executeAddUser;
-
-        } else if (mode === 'edit') {
-            document.getElementById('modalTitle').innerText = 'Edit Member';
-            ['field-name','field-email'].forEach(id => document.getElementById(id).style.display = 'block');
-            document.getElementById('inputName').value  = data.name  || '';
-            document.getElementById('inputEmail').value = data.email || '';
-            modalSubmitBtn.onclick = () => executeUpdateUser(data.id);
-
-        } else if (mode === 'deposit') {
-            document.getElementById('modalTitle').innerText = 'Gold Deposit';
-            document.getElementById('field-amount').style.display = 'block';
-            document.getElementById('inputAmount').value = '';
-            modalSubmitBtn.onclick = () => executeDeposit(data.id);
-        }
-
-        modal.style.display = 'flex';
-    }
-
-    function closeModal() { modal.style.display = 'none'; }
-
-    // ── Load / Render Users ──────────────────────────────────────────────────────
-    function loadUsers(page = 0) {
-        currentPage = page;
-        const sep = currentURL.includes('?') ? '&' : '?';
-        const url = `${currentURL}${sep}page=${page}&size=20`;
-
-        fetch(url)
-            .then(r => r.json())
-            .then(data => {
-                const table = document.getElementById('usersTable');
-                table.innerHTML = '';
-
-                const users = data._embedded?.userses;
-                if (users && users.length > 0) {
-                    users.forEach((user, i) => {
-                        const userId = user._links.self.href.split('/').pop();
-                        const name   = (user.name  || '').replace(/'/g, "\\'");
-                        const email  = (user.email || '').replace(/'/g, "\\'");
-                        table.innerHTML += `
-                            <tr onclick="window.location.href='/members/${userId}'">
-                                <td>${i + 1 + page * 20}</td>
-                                <td style="color:var(--gold)">#${userId}</td>
-                                <td>${user.name}</td>
-                                <td>${user.email}</td>
-                                <td>₹${user.balance}</td>
-                                <td>${formatDate(user.createdAt)}</td>
-                                <td onclick="event.stopPropagation()">
-                                    <button onclick="showModal('deposit',{id:${userId}})">Deposit</button>
-                                    <button class="btn-outline"
-                                            onclick="showModal('edit',{id:${userId},name:'${name}',email:'${email}'})">Edit</button>
-                                </td>
-                            </tr>`;
-                    });
-                    createPagination(data.page?.totalPages || 0);
-                } else {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align:center;padding:80px;color:#888;font-style:italic;">
-                                <div style="font-size:1.2rem;color:var(--gold);margin-bottom:10px;">No matches found</div>
-                                Try adjusting your search filters or clear them to see all members.
-                            </td>
-                        </tr>`;
-                    createPagination(0);
-                }
-            })
-            .catch(err => { console.error('Error loading users:', err); createPagination(0); });
-    }
-
-    function createPagination(totalPages) {
-        const footer = document.getElementById('pagination');
-        footer.innerHTML = '';
-        if (!totalPages || totalPages <= 1) { footer.style.display = 'none'; return; }
-        footer.style.display = 'block';
-        for (let i = 0; i < totalPages; i++) {
-            footer.innerHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}"
-                        onclick="loadUsers(${i})">${i + 1}</button>`;
-        }
-    }
-
-    // ── Search ───────────────────────────────────────────────────────────────────
-    function searchUsers() {
-        const name  = document.getElementById('nameSearch').value.trim();
-        const email = document.getElementById('emailSearch').value.trim();
-        if (name)       currentURL = `${BASE_URL}/search/findByNameContainingIgnoreCase?name=${encodeURIComponent(name)}`;
-        else if (email) currentURL = `${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`;
-        else            currentURL = BASE_URL;
-        isSearchMode = !!(name || email);
-        loadUsers(0);
-    }
-
-    function clearSearch() {
-        document.getElementById('nameSearch').value  = '';
-        document.getElementById('emailSearch').value = '';
-        currentURL   = BASE_URL;
-        isSearchMode = false;
-        loadUsers(0);
-    }
-
-    // ── Deposit ──────────────────────────────────────────────────────────────────
-    function executeDeposit(userId) {
-        const amount   = Number(document.getElementById('inputAmount').value);
+    function submitDeposit() {
+        const amount   = Number(document.getElementById('depositAmount').value);
         const errorBox = document.getElementById('depositError');
         errorBox.innerText = '';
         if (!amount || amount < 1 || amount > 500000) {
             errorBox.innerText = 'Enter a valid amount between ₹1 and ₹5,00,000';
             return;
         }
-        fetch(`/api/deposit/${userId}?amount=${amount}`, { method: 'PUT' })
+        fetch(`/api/deposit/${depositUserId}?amount=${amount}`, { method: 'PUT' })
             .then(res => {
-                if (!res.ok) throw new Error('Deposit failed');
-                closeModal();
-                loadUsers(currentPage);
+                if (!res.ok) throw new Error();
+                document.getElementById('depositModal').classList.remove('open');
+                window.location.reload(); // Instantly update balance display
             })
-            .catch(() => { document.getElementById('depositError').innerText = 'Deposit failed. Please try again.'; });
+            .catch(() => { errorBox.innerText = 'Deposit failed. Is the backend running?'; });
     }
 
-    // ── Update User (Edit) ────────────────────────────────────────────────────────
-    async function executeUpdateUser(userId) {
-        const name  = document.getElementById('inputName').value.trim();
-        const email = document.getElementById('inputEmail').value.trim();
-        clearErrors();
-        let isValid = true;
-
-        if (!name) { document.getElementById('nameError').innerText = 'Name is required'; isValid = false; }
-        else if (!/^[A-Za-z\s]+$/.test(name)) { document.getElementById('nameError').innerText = 'Letters only'; isValid = false; }
-
-        if (!email) { document.getElementById('emailError').innerText = 'Email is required'; isValid = false; }
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').innerText = 'Invalid email'; isValid = false; }
-
-        if (!isValid) return;
-
-        try {
-            // Check for duplicate email (excluding current user)
-            const checkRes  = await fetch(`${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`);
-            const checkData = await checkRes.json();
-            if (checkData._embedded?.userses) {
-                const dup = checkData._embedded.userses.find(u => {
-                    const id = u._links.self.href.split('/').pop();
-                    return u.email.toLowerCase() === email.toLowerCase() && String(id) !== String(userId);
-                });
-                if (dup) { document.getElementById('emailError').innerText = 'Email already registered to another account'; return; }
-            }
-
-            // Send update through our Spring MVC proxy
-            const res = await fetch(`/api/users/${userId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email })
-            });
-
-            if (res.ok) { closeModal(); loadUsers(currentPage); }
-            else        { document.getElementById('emailError').innerText = 'Update failed. Please try again.'; }
-        } catch (e) { console.error('Update error:', e); }
+    function searchUsers() {
+        const name  = document.getElementById('nameSearch').value.trim();
+        const email = document.getElementById('emailSearch').value.trim();
+        if (name)       currentURL = `${BASE_URL}/search/findByNameContainingIgnoreCase?name=${encodeURIComponent(name)}`;
+        else if (email) currentURL = `${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`;
+        else            currentURL = BASE_URL;
+        loadPage(0);
     }
 
-    // ── Add New User ─────────────────────────────────────────────────────────────
-    async function executeAddUser() {
-        const name    = document.getElementById('inputName').value.trim();
-        const email   = document.getElementById('inputEmail').value.trim();
-        const street  = document.getElementById('inputStreet').value.trim();
-        const city    = document.getElementById('inputCity').value.trim();
-        const state   = document.getElementById('inputState').value.trim();
-        const postal  = document.getElementById('inputPostal').value.trim();
-        const country = document.getElementById('inputCountry').value.trim();
-        clearErrors();
-        let isValid = true;
+    function clearSearch() {
+        document.getElementById('nameSearch').value  = '';
+        document.getElementById('emailSearch').value = '';
+        currentURL = BASE_URL;
+        loadPage(0);
+    }
 
-        if (!name || !/^[A-Za-z\s]+$/.test(name))    { document.getElementById('nameError').innerText    = 'Letters only'; isValid = false; }
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').innerText   = 'Invalid email'; isValid = false; }
-        if (!street)                                  { document.getElementById('streetError').innerText  = 'Required'; isValid = false; }
-        if (!city || !/^[A-Za-z\s]+$/.test(city))    { document.getElementById('cityError').innerText    = 'Letters only'; isValid = false; }
-        if (!state || !/^[A-Za-z\s]+$/.test(state))  { document.getElementById('stateError').innerText   = 'Letters only'; isValid = false; }
-        if (!postal || !/^[0-9]+$/.test(postal))      { document.getElementById('postalError').innerText  = 'Numbers only'; isValid = false; }
-        if (!country || !/^[A-Za-z\s]+$/.test(country)){ document.getElementById('countryError').innerText = 'Letters only'; isValid = false; }
-        if (!isValid) return;
+    function loadPage(page) {
+        currentPage = page;
+        const sep = currentURL.includes('?') ? '&' : '?';
+        fetch(`${currentURL}${sep}page=${page}&size=20`)
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('usersTable');
+                tbody.innerHTML = '';
+                const users = data._embedded?.userses;
+                if (users && users.length > 0) {
+                    users.forEach((user, i) => {
+                        const href = user._links.self.href;
+                        const uid = href.substring(href.lastIndexOf('/') + 1);
+                        const name  = (user.name  || '').replace(/'/g, "\\'");
+                        const email = (user.email || '').replace(/'/g, "\\'");
 
-        try {
-            // Check for duplicate email before creating
-            const checkRes  = await fetch(`${BASE_URL}/search/findByEmailContainingIgnoreCase?email=${encodeURIComponent(email)}`);
-            const checkData = await checkRes.json();
-            if (checkData._embedded?.userses?.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-                document.getElementById('emailError').innerText = 'Email already registered';
-                return;
-            }
-
-            const res = await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, street, city, state, postalCode: postal, country })
+                        tbody.innerHTML += `
+                            <tr onclick="window.location.href='${detailPrefix}${uid}'" style="cursor:pointer">
+                                <td>${i + 1 + page * 20}</td>
+                                <td style="color:var(--gold)">#${uid}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>₹${user.balance}</td>
+                                <td>${formatDate(user.createdAt)}</td>
+                                <td onclick="event.stopPropagation()">
+                                    <button type="button" onclick="showDepositModal(${uid})">Deposit</button>
+                                    <button type="button" class="btn-outline"
+                                            data-uid="${uid}" data-name="${name}" data-email="${email}"
+                                            onclick="openEditModal(this)">Edit</button>
+                                </td>
+                            </tr>`;
+                    });
+                    buildPagination(data.page?.totalPages || 0);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:60px;color:#888;">No results found.</td></tr>`;
+                    buildPagination(0);
+                }
             });
+    }
 
-            if (res.ok) { closeModal(); loadUsers(0); }
-            else {
-                const err = await res.json().catch(() => ({}));
-                document.getElementById('emailError').innerText = err.message || 'Failed to create user.';
-            }
-        } catch (e) { alert('Transaction failed.'); }
+    function buildPagination(total) {
+        const el = document.getElementById('pagination');
+        el.innerHTML = '';
+        if (total <= 1) return;
+        for (let i = 0; i < total; i++) {
+            el.innerHTML += `<button type="button" class="page-btn${i === currentPage ? ' active' : ''}"
+                onclick="loadPage(${i})">${i + 1}</button>`;
+        }
+    }
+
+    function formatDate(d) {
+        if (!d) return '-';
+        const dt = new Date(d);
+        return `${String(dt.getDate()).padStart(2,'0')} ${dt.toLocaleString('default',{month:'long'})} ${dt.getFullYear()}`;
     }
 </script>
 </body>
