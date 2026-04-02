@@ -5,7 +5,373 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Digital Gold Wallet System</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="css/indexStyle.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1410 100%);
+            color: #e8e3d8;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Mesh */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(201, 151, 63, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(201, 151, 63, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(201, 151, 63, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: meshMove 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshMove {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(30px, -30px) scale(1.05);
+            }
+        }
+
+        /* Header Styles */
+        .header {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 80px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .coin-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 20px;
+            animation: coinFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes coinFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .coin-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(201, 151, 63, 0.3));
+        }
+
+        .header-sub {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #C9973F;
+            margin-bottom: 16px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(42px, 8vw, 72px);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            color: #f5f1e8;
+        }
+
+        .header h1 em {
+            font-style: italic;
+            font-weight: 400;
+            color: #C9973F;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-desc {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #c4b9a3;
+            max-width: 620px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        /* Ornamental Divider */
+        .ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 40px auto 0;
+            opacity: 0.6;
+        }
+
+        .ornament-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #C9973F, transparent);
+        }
+
+        .ornament-line.right {
+            transform: scaleX(-1);
+        }
+
+        .ornament-diamond {
+            width: 6px;
+            height: 6px;
+            background: #C9973F;
+            transform: rotate(45deg);
+        }
+
+        /* Section Styles */
+        .section {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px 100px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 400;
+            color: #f5f1e8;
+            letter-spacing: -0.01em;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Card Styles */
+        .card {
+            position: relative;
+            display: block;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(201, 151, 63, 0.15);
+            border-radius: 8px;
+            padding: 32px 24px 28px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(201, 151, 63, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201, 151, 63, 0.4);
+            box-shadow: 0 12px 40px rgba(201, 151, 63, 0.12);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #C9973F, transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-bar {
+            transform: scaleX(1);
+        }
+
+        /* Avatar */
+        .avatar-wrap {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(201, 151, 63, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .card:hover .avatar-wrap {
+            border-color: #C9973F;
+            box-shadow: 0 0 30px rgba(201, 151, 63, 0.3);
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .profile-pic {
+            transform: scale(1.1);
+        }
+
+        /* Card Text */
+        .card-role {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #C9973F;
+            margin-bottom: 8px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 400;
+            color: #f5f1e8;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .card-cta {
+            display: inline-block;
+            font-size: 13px;
+            color: #c4b9a3;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(201, 151, 63, 0.2);
+            width: 100%;
+            transition: color 0.3s ease;
+        }
+
+        .card:hover .card-cta {
+            color: #C9973F;
+        }
+
+        /* Fade In Animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in:nth-child(4) { animation-delay: 0.4s; }
+        .fade-in:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(201, 151, 63, 0.1);
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .footer-dot {
+            width: 4px;
+            height: 4px;
+            background: #C9973F;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #c4b9a3;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 60px 20px 40px;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 24px;
+            }
+
+            .section {
+                padding: 40px 20px 60px;
+            }
+
+            .section-header {
+                margin-bottom: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+                max-width: 320px;
+                margin: 0 auto;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -33,65 +399,57 @@
     <header class="section-header">
         <h2>The Team</h2>
     </header>
-
     <section class="team-grid">
 
         <a class="card fade-in" href="/members">
             <span class="card-bar"></span>
             <figure class="avatar-wrap">
-                <span class="avatar-ring"></span>
-                <figcaption class="avatar">PM</figcaption>
+                <img src="assets/member1.jpg" alt="Pratham Maske" class="profile-pic">
             </figure>
             <h3 class="card-role">Member 1</h3>
             <h4 class="card-name">Pratham Maske</h4>
             <span class="card-cta">View Profile</span>
         </a>
 
-        <a class="card fade-in" href="/vendors">
+        <a class="card fade-in" href="member2.html">
             <span class="card-bar"></span>
             <figure class="avatar-wrap">
-                <span class="avatar-ring"></span>
-                <figcaption class="avatar">SP</figcaption>
+                <img src="assets/member2.jpg" alt="Priya Sharma" class="profile-pic">
             </figure>
             <h3 class="card-role">Member 2</h3>
-            <h4 class="card-name">Sanika Pohare</h4>
+            <h4 class="card-name">Priya Sharma</h4>
             <span class="card-cta">View Profile</span>
         </a>
 
         <a class="card fade-in" href="/vendorBranches">
             <span class="card-bar"></span>
             <figure class="avatar-wrap">
-                <span class="avatar-ring"></span>
-                <figcaption class="avatar">RV</figcaption>
+                <img src="assets/member3.jpg" alt="Rohan Verma" class="profile-pic">
             </figure>
             <h3 class="card-role">Member 3</h3>
-            <h4 class="card-name">Kshitij Halmare</h4>
+            <h4 class="card-name">Rohan Verma</h4>
             <span class="card-cta">View Profile</span>
         </a>
 
-        <a class="card fade-in" href="/sjvendors">
+        <a class="card fade-in" href="member4.html">
             <span class="card-bar"></span>
             <figure class="avatar-wrap">
-                <span class="avatar-ring"></span>
-                <figcaption class="avatar">SJ</figcaption>
+                <img src="assets/member4.jpg" alt="Sneha Kulkarni" class="profile-pic">
             </figure>
             <h3 class="card-role">Member 4</h3>
-            <h4 class="card-name">Sanika Jain</h4>
+            <h4 class="card-name">Sanika jain</h4>
             <span class="card-cta">View Profile</span>
         </a>
 
         <a class="card fade-in" href="/virtual-members">
             <span class="card-bar"></span>
             <figure class="avatar-wrap">
-                <span class="avatar-ring"></span>
-                <figcaption class="avatar">VP</figcaption>
+                <img src="assets/member5.jpg" alt="Prathmesh Hande" class="profile-pic">
             </figure>
             <h3 class="card-role">Member 5</h3>
             <h4 class="card-name">Prathmesh Hande</h4>
             <span class="card-cta">View Profile</span>
         </a>
-
-
 
     </section>
 </main>
