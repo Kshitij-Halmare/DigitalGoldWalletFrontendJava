@@ -6,293 +6,203 @@
     <title>Vendors</title>
     <style>
         :root {
-     --gold: #C9973F;
-     --gold-dim: #9a7830;
-     --gold-pale: #e8c97a;
-     --bg: #080705;
-     --card-bg: #0f0d09;
-     --border: #252018;
-     --text: #ede6d8;
-     --muted: #8a7e6a;
- }
+            --gold: #C9973F;
+            --gold-dim: #9a7830;
+            --gold-pale: #e8c97a;
+            --bg: #080705;
+            --card-bg: #0f0d09;
+            --border: #252018;
+            --text: #ede6d8;
+            --muted: #8a7e6a;
+        }
 
- * {
-     margin: 0;
-     padding: 0;
-     box-sizing: border-box;
- }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
- body {
-     font-family: "Inter", "Segoe UI", Arial, sans-serif;
-     background: radial-gradient(circle at top, #0f0d09, #000);
-     color: var(--text);
-     min-height: 100vh;
- }
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(circle at top, #0f0d09, #000);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
- h1 {
-     text-align: center;
-     font-size: 2.4rem;
-     margin-top: 40px;
-     font-family: "Cormorant Garamond", serif;
-     color: var(--gold);
-     letter-spacing: 1px;
- }
+        h1 {
+            text-align: center;
+            font-size: 2.4rem;
+            margin-top: 40px;
+            font-family: "Cormorant Garamond", serif;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
 
- #status {
-     text-align: center;
-     margin-top: 10px;
-     color: var(--muted);
- }
+        #status { text-align: center; margin-top: 10px; color: var(--muted); }
 
- table {
-     width: 92%;
-     margin: 30px auto;
-     border-collapse: collapse;
-     background: var(--card-bg);
-     border: 1px solid var(--border);
-     border-radius: 14px;
-     overflow: hidden;
-     min-width: 900px;
- }
+        table {
+            width: 92%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            min-width: 900px;
+        }
 
- .table-wrapper {
-     width: 100%;
-     overflow-x: auto;
-     padding: 0 20px;
- }
+        .table-wrapper { width: 100%; overflow-x: auto; padding: 0 20px; }
 
- th {
-     background: #0c0a07;
-     color: var(--gold-pale);
-     padding: 14px;
-     font-size: 12px;
-     letter-spacing: 1.2px;
-     text-transform: uppercase;
-     text-align: left;
-     border-bottom: 1px solid var(--border);
- }
+        th {
+            background: #0c0a07;
+            color: var(--gold-pale);
+            padding: 14px;
+            font-size: 12px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
 
- td {
-     padding: 14px;
-     border-bottom: 1px solid #1a1712;
-     color: var(--text);
-     font-size: 0.92rem;
- }
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #1a1712;
+            color: var(--text);
+            font-size: 0.92rem;
+        }
 
- tr:hover {
-     background: rgba(201, 151, 63, 0.06);
-     transition: 0.2s;
- }
+        tr:hover { background: rgba(201, 151, 63, 0.06); transition: 0.2s; }
 
- .action-btn {
-     padding: 8px 12px;
-     border-radius: 8px;
-     border: 1px solid var(--border);
-     cursor: pointer;
-     font-size: 12px;
-     font-weight: 600;
-     transition: 0.2s;
- }
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
 
- .physical-btn {
-     background: transparent;
-     border: 1px solid #3a2e16;
-     color: #e8c97a;
- }
+        .physical-btn { background: transparent; border: 1px solid #3a2e16; color: #e8c97a; }
+        .physical-btn:hover { background: rgba(201, 151, 63, 0.12); }
+        .virtual-btn  { background: transparent; border: 1px solid #3a2e16; color: #e8c97a; }
+        .virtual-btn:hover  { background: rgba(201, 151, 63, 0.12); }
 
- .physical-btn:hover {
-     background: rgba(201, 151, 63, 0.12);
- }
+        .create-branch-btn { background: rgba(46,204,113,0.15); color: #2ecc71; border-color: #1e3a2f; }
+        .update-price-btn  { background: rgba(241,196,15,0.15); color: #f1c40f; border-color: #3d2e00; }
+        .create-branch-btn:hover, .update-price-btn:hover {
+            background: rgba(201,151,63,0.25); transform: scale(1.05);
+        }
 
- .virtual-btn {
-     background: transparent;
-     border: 1px solid #3a2e16;
-     color: #e8c97a;
- }
+        .loading { text-align: center; color: var(--muted); padding: 20px; }
+        .error   { color: #ff6b6b; text-align: center; }
 
- .virtual-btn:hover {
-     background: rgba(201, 151, 63, 0.12);
- }
+        /* ====================== MODALS ====================== */
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.75);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 14px; padding: 28px 30px; width: 440px;
+            color: var(--text); box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+        .modal-content h2 { color: var(--gold); text-align: center; margin-bottom: 22px; font-size: 1.5rem; }
+        .modal-content label { display: block; margin: 14px 0 6px; color: var(--muted); font-size: 0.92rem; }
+        .modal-content input {
+            width: 100%; padding: 11px 14px;
+            background: #0c0a07; border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-size: 1rem; margin-bottom: 8px;
+        }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 28px; justify-content: flex-end; }
+        .modal-buttons button {
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-weight: 600; font-size: 0.95rem; border: 1px solid var(--border); transition: all 0.2s;
+        }
+        .cancel-btn  { background: transparent; color: var(--muted); }
+        .confirm-btn { background: var(--gold); color: #000; border-color: var(--gold); }
+        .confirm-btn:hover { background: var(--gold-pale); transform: scale(1.04); }
+        .cancel-btn:hover  { background: rgba(201,151,63,0.15); }
 
- .create-branch-btn {
-     background: rgba(46, 204, 113, 0.15);
-     color: #2ecc71;
-     border-color: #1e3a2f;
- }
+        /* ====================== SEARCH + FILTER BAR ====================== */
+        .search-filter-bar {
+            width: 92%; margin: 25px auto 15px;
+            display: flex; align-items: center; gap: 15px; max-width: 1400px;
+        }
+        .search-box { flex: 1; position: relative; }
+        #searchInput {
+            width: 100%; padding: 14px 20px 14px 48px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; color: var(--text); font-size: 1rem; outline: none;
+        }
+        #searchInput:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,63,0.2); }
+        #searchInput::placeholder { color: var(--muted); }
+        .search-box::before {
+            content: "🔍"; position: absolute; left: 18px; top: 50%;
+            transform: translateY(-50%); font-size: 1.15rem; color: var(--muted); pointer-events: none;
+        }
+        .filter-btn {
+            padding: 14px 24px; background: #C9973F; color: #000; border: none;
+            border-radius: 12px; font-weight: 600; font-size: 0.98rem; cursor: pointer;
+            white-space: nowrap; transition: all 0.2s; box-shadow: 0 4px 10px rgba(201,151,63,0.3);
+        }
+        .filter-btn:hover { background: #e8c97a; transform: translateY(-2px); }
 
- .update-price-btn {
-     background: rgba(241, 196, 15, 0.15);
-     color: #f1c40f;
-     border-color: #3d2e00;
- }
+        /* ====================== BREADCRUMB (dark theme) ====================== */
+        .breadcrumb-nav {
+            width: 92%;
+            margin: 18px auto 0;
+            max-width: 1400px;
+        }
 
- .create-branch-btn:hover,
- .update-price-btn:hover {
-     background: rgba(201, 151, 63, 0.25);
-     transform: scale(1.05);
- }
+        .breadcrumb {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 10px 16px;
+            margin: 0;
+            background: rgba(201, 151, 63, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
 
- .loading {
-     text-align: center;
-     color: var(--muted);
-     padding: 20px;
- }
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
- .error {
-     color: #ff6b6b;
-     text-align: center;
- }
+        .breadcrumb-icon {
+            width: 14px;
+            height: 14px;
+            color: var(--gold-dim);
+            flex-shrink: 0;
+        }
 
- /* ====================== MODALS ====================== */
- .modal {
-     display: none;
-     position: fixed;
-     z-index: 2000;
-     left: 0;
-     top: 0;
-     width: 100%;
-     height: 100%;
-     background-color: rgba(0, 0, 0, 0.75);
-     align-items: center;
-     justify-content: center;
- }
+        .breadcrumb-link {
+            color: var(--gold-dim);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: color 0.15s;
+        }
 
- .modal-content {
-     background: var(--card-bg);
-     border: 1px solid var(--border);
-     border-radius: 14px;
-     padding: 28px 30px;
-     width: 440px;
-     color: var(--text);
-     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
- }
+        .breadcrumb-link:hover { color: var(--gold); }
 
- .modal-content h2 {
-     color: var(--gold);
-     text-align: center;
-     margin-bottom: 22px;
-     font-size: 1.5rem;
- }
+        .breadcrumb-text {
+            color: var(--gold-pale);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
 
- .modal-content label {
-     display: block;
-     margin: 14px 0 6px;
-     color: var(--muted);
-     font-size: 0.92rem;
- }
-
- .modal-content input {
-     width: 100%;
-     padding: 11px 14px;
-     background: #0c0a07;
-     border: 1px solid var(--border);
-     border-radius: 8px;
-     color: var(--text);
-     font-size: 1rem;
-     margin-bottom: 8px;
- }
-
- .modal-buttons {
-     display: flex;
-     gap: 12px;
-     margin-top: 28px;
-     justify-content: flex-end;
- }
-
- .modal-buttons button {
-     padding: 10px 20px;
-     border-radius: 8px;
-     cursor: pointer;
-     font-weight: 600;
-     font-size: 0.95rem;
-     border: 1px solid var(--border);
-     transition: all 0.2s;
- }
-
- .cancel-btn {
-     background: transparent;
-     color: var(--muted);
- }
-
- .confirm-btn {
-     background: var(--gold);
-     color: #000;
-     border-color: var(--gold);
- }
-
- .confirm-btn:hover {
-     background: var(--gold-pale);
-     transform: scale(1.04);
- }
-
- .cancel-btn:hover {
-     background: rgba(201, 151, 63, 0.15);
- }
-
- /* ====================== SEARCH + FILTER BAR ====================== */
- .search-filter-bar {
-     width: 92%;
-     margin: 25px auto 15px;
-     display: flex;
-     align-items: center;
-     gap: 15px;
-     max-width: 1400px;
- }
-
- .search-box {
-     flex: 1;
-     position: relative;
- }
-
- #searchInput {
-     width: 100%;
-     padding: 14px 20px 14px 48px;
-     background: var(--card-bg);
-     border: 1px solid var(--border);
-     border-radius: 12px;
-     color: var(--text);
-     font-size: 1rem;
-     outline: none;
- }
-
- #searchInput:focus {
-     border-color: var(--gold);
-     box-shadow: 0 0 0 3px rgba(201, 151, 63, 0.2);
- }
-
- #searchInput::placeholder {
-     color: var(--muted);
- }
-
- .search-box::before {
-     content: "🔍";
-     position: absolute;
-     left: 18px;
-     top: 50%;
-     transform: translateY(-50%);
-     font-size: 1.15rem;
-     color: var(--muted);
-     pointer-events: none;
- }
-
- .filter-btn {
-     padding: 14px 24px;
-     background: #C9973F;
-     color: #000;
-     border: none;
-     border-radius: 12px;
-     font-weight: 600;
-     font-size: 0.98rem;
-     cursor: pointer;
-     white-space: nowrap;
-     transition: all 0.2s;
-     box-shadow: 0 4px 10px rgba(201, 151, 63, 0.3);
- }
-
- .filter-btn:hover {
-     background: #e8c97a;
-     transform: translateY(-2px);
- }
+        .breadcrumb-separator {
+            color: var(--muted);
+            font-size: 0.75rem;
+            margin: 0 2px;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -302,6 +212,39 @@
 
 <!-- Error message if backend is down -->
 <p th:if="${error}" th:text="${error}" style="color:red; text-align:center;"></p>
+
+<!-- ==================== BREADCRUMB ==================== -->
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"
+            th:each="crumb, iterStat : ${breadcrumbs}"
+            th:classappend="${iterStat.last} ? ' active' : ''">
+
+            <!-- Home icon only on the first item -->
+            <svg th:if="${iterStat.first}"
+                 class="breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="9 22 9 12 15 12 15 22"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <!-- Last item → plain text (current page) -->
+            <span th:if="${iterStat.last}"
+                  th:text="${crumb.name}"
+                  class="breadcrumb-text"></span>
+
+            <!-- Not last → clickable link -->
+            <a th:if="${!iterStat.last}"
+               th:href="${crumb.url}"
+               th:text="${crumb.name}"
+               class="breadcrumb-link"></a>
+
+            <!-- Separator — not after the last item -->
+            <span th:if="${!iterStat.last}" class="breadcrumb-separator">›</span>
+        </li>
+    </ol>
+</nav>
 
 <!-- Search + Filter Bar -->
 <div class="search-filter-bar">
@@ -329,55 +272,34 @@
         </tr>
         </thead>
         <tbody>
-        <!-- No vendors fallback -->
         <tr th:if="${#lists.isEmpty(vendors)}">
-            <td colspan="9" style="text-align:center; color:#888;">
-                No vendors found
-            </td>
+            <td colspan="9" style="text-align:center; color:#888;">No vendors found</td>
         </tr>
 
-        <!-- Vendor rows — Thymeleaf renders these on page load -->
         <tr th:each="vendor : ${vendors}"
             th:data-name="${vendor['vendorName']}">
-
             <td th:text="${vendor['vendorName']} ?: '-'"></td>
             <td th:text="${vendor['description']} ?: '-'"></td>
             <td th:text="${vendor['contactPersonName']} ?: '-'"></td>
             <td th:text="${vendor['contactEmail']} ?: '-'"></td>
             <td th:text="${vendor['contactPhone']} ?: '-'"></td>
             <td th:text="${vendor['totalGoldQuantity']} ?: '-'"></td>
-            <td>
-                ₹<span th:text="${vendor['currentGoldPrice']} ?: '-'"></span>
-            </td>
-
-            <!-- Action Buttons — vendorId from projection directly -->
+            <td>₹<span th:text="${vendor['currentGoldPrice']} ?: '-'"></span></td>
             <td>
                 <button class="action-btn physical-btn"
-                        th:data-id="${vendor['vendorId']}"
-                        data-type="physical"
-                        onclick="handleAction(this)">
-                    Show Physical Gold Trans
-                </button>
+                        th:data-id="${vendor['vendorId']}" data-type="physical"
+                        onclick="handleAction(this)">Show Physical Gold Trans</button>
                 <button class="action-btn virtual-btn"
-                        th:data-id="${vendor['vendorId']}"
-                        data-type="virtual"
-                        onclick="handleAction(this)">
-                    Show Virtual Gold Holding
-                </button>
+                        th:data-id="${vendor['vendorId']}" data-type="virtual"
+                        onclick="handleAction(this)">Show Virtual Gold Holding</button>
             </td>
-
-            <!-- Vendor Management Buttons -->
             <td>
                 <button class="action-btn create-branch-btn"
                         th:data-id="${vendor['vendorId']}"
-                        onclick="handleAction(this)">
-                    + Create Branch
-                </button>
+                        onclick="handleAction(this)">+ Create Branch</button>
                 <button class="action-btn update-price-btn"
                         th:data-id="${vendor['vendorId']}"
-                        onclick="handleAction(this)">
-                    Update Price
-                </button>
+                        onclick="handleAction(this)">Update Price</button>
             </td>
         </tr>
         </tbody>
@@ -435,71 +357,46 @@
         <div class="modal-buttons" style="margin-top: 30px;">
             <button class="cancel-btn" onclick="closeFilterModal()">Cancel</button>
             <button class="confirm-btn" onclick="applyFilters()">Apply Filters</button>
-            <button class="cancel-btn"
-                    onclick="clearFilters()"
-                    style="margin-left: auto;">Clear All</button>
+            <button class="cancel-btn" onclick="clearFilters()" style="margin-left: auto;">Clear All</button>
         </div>
     </div>
 </div>
 
 <script th:inline="javascript">
     const BACKEND_URL = "http://localhost:8080";
-
-    // ======= vendorId is now available in data-id on every button =======
-    // No need to fetch vendorId separately — Thymeleaf already set it
-
     let currentVendorId = null;
 
-    // ====================== UNIFIED BUTTON HANDLER ======================
     function handleAction(btn) {
         const id = btn.dataset.id;
-
         if (btn.classList.contains('create-branch-btn')) {
-            currentVendorId = id;
-            showCreateBranchModal();
-        }
-        else if (btn.classList.contains('update-price-btn')) {
-            currentVendorId = id;
-            showUpdatePriceModal();
-        }
-        else if (btn.dataset.type === "physical" || btn.dataset.type === "virtual") {
-            // Navigate to Thymeleaf Page 2 (Spring MVC route)
+            currentVendorId = id; showCreateBranchModal();
+        } else if (btn.classList.contains('update-price-btn')) {
+            currentVendorId = id; showUpdatePriceModal();
+        } else if (btn.dataset.type === "physical" || btn.dataset.type === "virtual") {
             window.location.href = `/vendor-details?id=${id}&type=${btn.dataset.type}`;
         }
     }
 
-    // ====================== CLIENT-SIDE SEARCH ======================
-    // Data is already in the DOM — just show/hide rows, no fetch needed!
     document.getElementById('searchInput').addEventListener('input', function () {
         const term = this.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#vendorsTable tbody tr[data-name]');
-
-        rows.forEach(row => {
+        document.querySelectorAll('#vendorsTable tbody tr[data-name]').forEach(row => {
             const name = row.dataset.name?.toLowerCase() || '';
             row.style.display = (!term || name.includes(term)) ? '' : 'none';
         });
     });
 
-    // ====================== FILTER MODAL ======================
     document.getElementById('filterBtn').addEventListener('click', showFilterModal);
-
-    function showFilterModal() {
-        document.getElementById('filterModal').style.display = 'flex';
-    }
-    function closeFilterModal() {
-        document.getElementById('filterModal').style.display = 'none';
-    }
+    function showFilterModal()  { document.getElementById('filterModal').style.display = 'flex'; }
+    function closeFilterModal() { document.getElementById('filterModal').style.display = 'none'; }
 
     async function applyFilters() {
         const minPrice = document.getElementById('minPrice').value || null;
         const maxPrice = document.getElementById('maxPrice').value || null;
         const minQty   = document.getElementById('minQty').value   || null;
         const maxQty   = document.getElementById('maxQty').value   || null;
-
         closeFilterModal();
 
         let url = BACKEND_URL + "/vendors?projection=vendorDetails";
-
         if (minPrice && maxPrice)
             url = `${BACKEND_URL}/vendors/search/findByCurrentGoldPriceBetween?minPrice=${minPrice}&maxPrice=${maxPrice}`;
         else if (minPrice)
@@ -512,35 +409,26 @@
         try {
             const res  = await fetch(url, { headers: { 'Accept': 'application/hal+json' } });
             const data = await res.json();
-            const vendors = data._embedded?.vendors || [];
-            renderFilteredRows(vendors);
-        } catch (e) {
-            alert("Failed to apply filters");
-        }
+            renderFilteredRows(data._embedded?.vendors || []);
+        } catch (e) { alert("Failed to apply filters"); }
     }
 
     function clearFilters() {
         ['minPrice','maxPrice','minQty','maxQty'].forEach(id =>
             document.getElementById(id).value = ''
         );
-        // Restore all rows
-        document.querySelectorAll('#vendorsTable tbody tr').forEach(r =>
-            r.style.display = ''
-        );
+        document.querySelectorAll('#vendorsTable tbody tr').forEach(r => r.style.display = '');
         closeFilterModal();
     }
 
     function renderFilteredRows(vendors) {
         const tbody = document.querySelector('#vendorsTable tbody');
         tbody.innerHTML = '';
-
         if (vendors.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9"
-                style="text-align:center;color:#888;">
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">
                 No vendors match the selected filters</td></tr>`;
             return;
         }
-
         vendors.forEach(v => {
             const id = v.vendorId || '';
             const row = document.createElement('tr');
@@ -554,38 +442,23 @@
                 <td>${v.totalGoldQuantity ?? '-'}</td>
                 <td>₹${v.currentGoldPrice ?? '-'}</td>
                 <td>
-                    <button class="action-btn physical-btn"
-                        data-id="${id}" data-type="physical"
-                        onclick="handleAction(this)">
-                        Show Physical Gold Trans
-                    </button>
-                    <button class="action-btn virtual-btn"
-                        data-id="${id}" data-type="virtual"
-                        onclick="handleAction(this)">
-                        Show Virtual Gold Holding
-                    </button>
+                    <button class="action-btn physical-btn" data-id="${id}" data-type="physical"
+                        onclick="handleAction(this)">Show Physical Gold Trans</button>
+                    <button class="action-btn virtual-btn" data-id="${id}" data-type="virtual"
+                        onclick="handleAction(this)">Show Virtual Gold Holding</button>
                 </td>
                 <td>
-                    <button class="action-btn create-branch-btn"
-                        data-id="${id}" onclick="handleAction(this)">
-                        + Create Branch
-                    </button>
-                    <button class="action-btn update-price-btn"
-                        data-id="${id}" onclick="handleAction(this)">
-                        Update Price
-                    </button>
+                    <button class="action-btn create-branch-btn" data-id="${id}"
+                        onclick="handleAction(this)">+ Create Branch</button>
+                    <button class="action-btn update-price-btn" data-id="${id}"
+                        onclick="handleAction(this)">Update Price</button>
                 </td>`;
             tbody.appendChild(row);
         });
     }
 
-    // ====================== CREATE BRANCH ======================
-    function showCreateBranchModal() {
-        document.getElementById('createBranchModal').style.display = 'flex';
-    }
-    function closeCreateModal() {
-        document.getElementById('createBranchModal').style.display = 'none';
-    }
+    function showCreateBranchModal()  { document.getElementById('createBranchModal').style.display = 'flex'; }
+    function closeCreateModal()        { document.getElementById('createBranchModal').style.display = 'none'; }
 
     async function submitCreateBranch() {
         const branchName = document.getElementById('branchName').value.trim();
@@ -593,41 +466,27 @@
         const street     = document.getElementById('branchStreet').value.trim();
         const city       = document.getElementById('branchCity').value.trim();
         const state      = document.getElementById('branchState').value.trim();
-
         if (!branchName || isNaN(quantity) || quantity <= 0 || !street || !city || !state) {
-            alert("Please fill all fields correctly.");
-            return;
+            alert("Please fill all fields correctly."); return;
         }
         closeCreateModal();
         await performCreateBranch(currentVendorId, branchName, quantity, street, city, state);
     }
-    console.log("Branch payload:", JSON.stringify({
-    quantity: quantity,
-    vendors: `${BACKEND_URL}/vendors/${vendorId}`,
-    address: `${BACKEND_URL}/addresses/${addressId}`,
-    createdAt: new Date().toISOString().slice(0, 19)
-    }));
+
     async function performCreateBranch(vendorId, branchName, quantity, street, city, state) {
         try {
-            // Step 1: Create Address
             const addressRes = await fetch(`${BACKEND_URL}/addresses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    street, city, state,
-                    country: "India", postalCode: "411001"
-                })
+                body: JSON.stringify({ street, city, state, country: "India", postalCode: "411001" })
             });
             if (!addressRes.ok) throw new Error("Failed to create address");
-
             const addressData = await addressRes.json();
             let addressId = addressData.addressId || addressData.id;
-            if (!addressId && addressData._links?.self?.href) {
+            if (!addressId && addressData._links?.self?.href)
                 addressId = addressData._links.self.href.match(/\/addresses\/(\d+)$/)?.[1];
-            }
             if (!addressId) throw new Error("Could not extract address ID");
 
-            // Step 2: Create Branch
             const branchRes = await fetch(`${BACKEND_URL}/vendorBranches`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -640,41 +499,27 @@
             });
             if (!branchRes.ok) throw new Error("Failed to create branch");
 
-            // Step 3: Update Vendor Total Quantity
             const updateRes = await fetch(`${BACKEND_URL}/branches/updateQuantity`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    quantity,
-                    vendors: { vendorId: parseInt(vendorId) }
-                })
+                body: JSON.stringify({ quantity, vendors: { vendorId: parseInt(vendorId) } })
             });
 
             alert(updateRes.ok
                 ? `✅ Branch "${branchName}" created! ${quantity}g added to vendor total.`
                 : `✅ Branch created, but failed to update vendor total.`
             );
-
             location.reload();
-
-        } catch (err) {
-            alert("❌ Error: " + err.message);
-        }
+        } catch (err) { alert("❌ Error: " + err.message); }
     }
 
-    // ====================== UPDATE PRICE ======================
-    function showUpdatePriceModal() {
-        document.getElementById('updatePriceModal').style.display = 'flex';
-    }
-    function closePriceModal() {
-        document.getElementById('updatePriceModal').style.display = 'none';
-    }
+    function showUpdatePriceModal() { document.getElementById('updatePriceModal').style.display = 'flex'; }
+    function closePriceModal()      { document.getElementById('updatePriceModal').style.display = 'none'; }
 
     async function submitUpdatePrice() {
         const newPrice = parseFloat(document.getElementById('newGoldPrice').value);
         if (isNaN(newPrice) || newPrice <= 0) {
-            alert("Please enter a valid price greater than 0.");
-            return;
+            alert("Please enter a valid price greater than 0."); return;
         }
         closePriceModal();
         try {
@@ -688,9 +533,7 @@
                 : "❌ Failed to update price."
             );
             location.reload();
-        } catch (err) {
-            alert("❌ Error connecting to backend.");
-        }
+        } catch (err) { alert("❌ Error connecting to backend."); }
     }
 </script>
 

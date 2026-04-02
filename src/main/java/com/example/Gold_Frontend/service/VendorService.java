@@ -14,7 +14,7 @@ public class VendorService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String BASE_URL = "http://localhost:8080/vendors";
+    private final String BASE_URL = "http://172.16.160.128:8080/vendors";
 
     public Map getVendorById(Integer id) {
         String url = BASE_URL + "/" + id + "?projection=vendorDetails";
