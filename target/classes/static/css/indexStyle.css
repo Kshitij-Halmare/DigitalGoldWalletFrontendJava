@@ -178,12 +178,7 @@ body {
 .card:hover .card-bar { transform: scaleX(1); }
 
 /* avatar ring */
-.avatar-wrap {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  margin-bottom: 22px;
-}
+
 .avatar-ring {
   position: absolute;
   inset: -3px;
@@ -324,4 +319,20 @@ footer {
 .coin-spin {
   animation: spinY 6s linear infinite;
   transform-style: preserve-3d;
+}
+.avatar-wrap {
+  position: relative;
+  width: 110px;  /* Matches the new image size so it doesn't overflow */
+  height: 110px; /* Matches the new image size */
+  margin-bottom: 28px; /* Adds perfect breathing room before the text starts */
+}
+
+.profile-pic {
+    width: 100%;  /* Tells the image to perfectly fill the 110px wrap */
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* Ensures the image doesn't stretch or warp */
+    border: 3px solid #C9973F;
+    display: block;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Adds a gorgeous dark shadow underneath */
 }
