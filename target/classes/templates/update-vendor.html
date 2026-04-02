@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Vendor</title>
+<!--    <link rel="stylesheet" th:href="@{/css/updateVendorForm.css}">-->
+    <style>
+        /* ==============================================
+           UPDATE VENDOR — INLINE STYLES
+           ============================================== */
+
+        :root {
+          --gold:       #C9973F;
+          --gold-dim:   #9a7830;
+          --gold-pale:  #e8c97a;
+          --bg:         #080705;
+          --card-bg:    #0f0d09;
+          --border:     #252018;
+          --border-2:   #1a1712;
+          --text:       #ede6d8;
+          --muted:      #8a7e6a;
+          --subtle:     #6a6050;
+        }
+
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          padding: 50px 20px;
+        }
+
+        /* ── CONTAINER ── */
+        .container {
+          width: 100%;
+          max-width: 650px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 36px 32px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        /* ── BREADCRUMBS ── */
+        .breadcrumbs {
+          font-size: 0.85rem;
+          margin-bottom: 24px;
+          color: var(--subtle);
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          align-items: center;
+        }
+
+        .breadcrumbs a {
+          color: var(--muted);
+          text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+          color: var(--gold);
+        }
+
+        .breadcrumbs .active {
+          color: var(--gold-pale);
+        }
+
+        /* ── TITLE ── */
+        h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 2.2rem;
+          font-weight: 300;
+          margin-bottom: 28px;
+        }
+
+        /* ── FORM ── */
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        label {
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--subtle);
+        }
+
+        input {
+          background: #0a0806;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 12px 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.95rem;
+          color: var(--text);
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder {
+          color: #3e3828;
+        }
+
+        input:focus {
+          border-color: var(--gold-dim);
+          box-shadow: 0 0 0 1px rgba(201,151,63,0.2);
+        }
+
+        /* ── BUTTON ── */
+        button {
+          margin-top: 10px;
+          background: #1e1a10;
+          border: 1px solid var(--gold-dim);
+          border-radius: 10px;
+          padding: 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.95rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          color: var(--gold);
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+
+        button:hover {
+          background: rgba(201,151,63,0.15);
+          border-color: var(--gold);
+          color: var(--gold-pale);
+        }
+        .error {
+          color: #ff6b6b;
+          font-size: 11px;
+          margin-top: -10px;
+          margin-bottom: 5px;
+        }
+
+        /* ── ANIMATION ── */
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+          .container {
+            padding: 26px 20px;
+          }
+
+          h2 {
+            font-size: 1.8rem;
+          }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <div class="breadcrumbs">
+        <a th:href="@{/}">Home</a>
+        <span>›</span>
+        <a th:href="@{/vendors}">Vendors</a>
+        <span>›</span>
+        <span th:text="${vendor != null ? vendor.vendorName : 'Vendor'}"></span>
+        <span>›</span>
+        <span class="active">Update</span>
+    </div>
+    <h2>Update Vendor</h2>
+
+    <form th:action="@{/vendors/update/{id}(id=${vendor.id})}"
+          th:object="${vendor}"
+          method="post"
+          onsubmit="return validateForm()">
+
+        <!-- Vendor Name -->
+        <label>Vendor Name *</label>
+        <input type="text" th:field="*{vendorName}" id="vendorName"
+               required minlength="3">
+        <small class="error" id="vendorNameError"></small>
+
+        <!-- Description -->
+        <label>Description *</label>
+        <input type="text" th:field="*{description}" id="description"
+               required minlength="5">
+        <small class="error" id="descriptionError"></small>
+
+        <!-- Gold Quantity -->
+        <label>Gold Quantity *</label>
+        <input type="number" th:field="*{totalGoldQuantity}" id="goldQty"
+               min="1" required>
+        <small class="error" id="goldQtyError"></small>
+
+        <!-- Gold Price -->
+        <label>Gold Price *</label>
+        <input type="number" th:field="*{currentGoldPrice}" id="goldPrice"
+               min="1" required>
+        <small class="error" id="goldPriceError"></small>
+
+        <!-- Contact Person -->
+        <label>Contact Person *</label>
+        <input type="text" th:field="*{contactPersonName}" id="contactPerson"
+               required minlength="3">
+        <small class="error" id="contactPersonError"></small>
+
+        <!-- Email -->
+        <label>Email *</label>
+        <input type="email" th:field="*{contactEmail}" id="email"
+               required>
+        <small class="error" id="emailError"></small>
+
+        <!-- Phone -->
+        <label>Phone *</label>
+        <input type="text" th:field="*{contactPhone}" id="phone"
+               pattern="[0-9]{10}" maxlength="10" required>
+        <small class="error" id="phoneError"></small>
+
+        <!-- Website -->
+        <label>Website *</label>
+        <input type="url" th:field="*{websiteUrl}" id="website"
+               required>
+        <small class="error" id="websiteError"></small>
+
+        <button type="submit">Update</button>
+    </form>
+
+
+</div>
+
+</body>
+</html>
