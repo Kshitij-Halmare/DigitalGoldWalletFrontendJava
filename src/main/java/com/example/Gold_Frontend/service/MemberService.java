@@ -167,7 +167,8 @@ public class MemberService {
 
     public AddressDTO getAddressByUrl(String url) {
         if (url == null) return null;
-        try { return restClient.get().uri(url).retrieve().body(AddressDTO.class); } catch (Exception e) { return null; }
+        try { System.out.println(restClient.get().uri(url).retrieve().body(AddressDTO.class));
+            return restClient.get().uri(url).retrieve().body(AddressDTO.class); } catch (Exception e) { return null; }
     }
 
     public List<PhysicalTransactionDTO> getPhysicalTransactions(Integer userId) {

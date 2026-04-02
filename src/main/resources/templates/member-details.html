@@ -123,13 +123,13 @@
         <td th:text="${'₹ ' + #numbers.formatDecimal(user.balance, 1, 2)}">₹ 0.00</td>
     </tr>
     <tr>
-        <th>Address</th>
-        <td th:if="${address != null}"
-            th:text="${address.street + ', ' + address.city + ', ' + address.state + ' ' + address.postalCode}">
-        </td>
-        <td th:unless="${address != null}" style="color: #888; font-style: italic;">
-            Not Available
-        </td>
+<!--        <th>Address</th>-->
+<!--        <td th:if="${address != null}"-->
+<!--            th:text="${address.street + ', ' + address.city + ', ' + address.state + ' ' + address.postalCode}">-->
+<!--        </td>-->
+<!--        <td th:unless="${address != null}" style="color: #888; font-style: italic;">-->
+<!--            Not Available-->
+<!--        </td>-->
     </tr>
     <tr>
         <th>Member Since</th>
@@ -161,11 +161,11 @@
             <th>Qty (g)</th>
             <th>Amount</th>
             <th>Vendor</th>
-            <th>Contact</th>
+<!--            <th>Contact</th>-->
             <th>Location</th>
             <th>Type</th>
-            <th>Status</th>
-            <th>Date</th>
+<!--            <th>Status</th>-->
+<!--            <th>Date</th>-->
         </tr>
         </thead>
         <tbody>
@@ -174,10 +174,10 @@
             <td style="color:var(--gold); font-weight: 600;" th:text="${tx.quantity + 'g'}">0g</td>
             <td th:text="'₹' + ${#numbers.formatDecimal(tx.amount, 1, 2)}">₹0</td>
             <td th:text="${tx.branch.vendors.vendorName}">Vendor</td>
-            <td class="contact-info">
-                <span th:text="${tx.branch.vendors.contactPersonName}">Name</span>
-                <small th:text="${tx.branch.vendors.contactEmail}"></small>
-            </td>
+<!--            <td class="contact-info">-->
+<!--                <span th:text="${tx.branch.vendors.contactPersonName}">Name</span>-->
+<!--                <small th:text="${tx.branch.vendors.contactEmail}"></small>-->
+<!--            </td>-->
             <td>
                 <span th:text="${tx.branch.address.street}">City</span>,
                 <small th:text="${tx.branch.address.city}" style="display:block; color:#888;"></small>
@@ -185,12 +185,12 @@
                 <small th:text="${tx.branch.address.postalCode}" style="display:block; color:#888;"></small>
             </td>
             <td th:text="${tx.transactionType}">Type</td>
-            <td>
-                <span th:text="${tx.transactionStatus}"
-                      th:style="${tx.transactionStatus == 'SUCCESS' ? 'color: #4CAF50' : 'color: var(--gold)'}">
-                </span>
-            </td>
-            <td th:text="${tx.createdAt != null ? #strings.substring(tx.createdAt, 0, 10) : '-'}">Date</td>
+<!--            <td>-->
+<!--                <span th:text="${tx.transactionStatus}"-->
+<!--                      th:style="${tx.transactionStatus == 'SUCCESS' ? 'color: #4CAF50' : 'color: var(&#45;&#45;gold)'}">-->
+<!--                </span>-->
+<!--            </td>-->
+<!--            <td th:text="${tx.createdAt != null ? #strings.substring(tx.createdAt, 0, 10) : '-'}">Date</td>-->
         </tr>
         <tr th:if="${#lists.isEmpty(assets)}">
             <td colspan="9" style="text-align:center; padding:60px; color:#888; font-style:italic;">
